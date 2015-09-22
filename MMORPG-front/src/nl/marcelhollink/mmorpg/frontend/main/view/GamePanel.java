@@ -102,4 +102,10 @@ public class GamePanel extends JPanel  implements Runnable, KeyListener {
         gsc.keyReleased(key.getKeyCode());
     }
 
+
+    public GameStateController getGsc() {
+        return gsc;
+    }
+
+
 }

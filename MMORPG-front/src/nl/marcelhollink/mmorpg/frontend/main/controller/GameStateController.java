@@ -10,16 +10,17 @@ public class GameStateController {
     private int currentState;
 
     public static final int
-            MENUSTATE = 0,
-            LOGINSTATE = 1,
-            REGISTERSTATE = 2,
-            PROFILESTATE = 3,
-            AVATAROVERVIEWSTATE = 4,
-            AVATARMANAGER = 5;
+            MENUSTATE = 1,
+            LOGINSTATE = 2,
+            REGISTERSTATE = 3,
+            PROFILESTATE = 4,
+            AVATAROVERVIEWSTATE = 5,
+            AVATARMANAGER = 6;
 
     public GameStateController() {
         gameStates = new ArrayList<GameState>();
 
+        gameStates.add(null);
         gameStates.add(new MenuState(this));
         gameStates.add(new LoginState(this));
         gameStates.add(new RegisterState(this));
@@ -49,5 +50,9 @@ public class GameStateController {
 
     public void keyReleased(int k){
         gameStates.get(currentState).keyReleased(k);
+    }
+
+    public ArrayList<GameState> getGameStates() {
+        return gameStates;
     }
 }

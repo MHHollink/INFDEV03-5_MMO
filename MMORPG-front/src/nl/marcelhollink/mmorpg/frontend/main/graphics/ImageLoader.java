@@ -5,10 +5,6 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Arrays;
 
-/**
- * This Class was created by marcel on 17-9-2015
- * Time of creation : 12:55
- */
 public class ImageLoader {
 
     public BufferedImage getImage(String path){

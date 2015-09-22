@@ -33,4 +33,9 @@ public class AvatarManagerState extends GameState{
     public void keyReleased(int k) {
 
     }
+
+    @Override
+    public void receive(String s) {
+
+    }
 }
