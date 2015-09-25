@@ -3,10 +3,11 @@ package nl.marcelhollink.mmorpg.frontend.main.view.gamestates;
 import nl.marcelhollink.mmorpg.frontend.main.UI;
 import nl.marcelhollink.mmorpg.frontend.main.controller.GameStateController;
 import nl.marcelhollink.mmorpg.frontend.main.graphics.ImageLoader;
-import nl.marcelhollink.mmorpg.frontend.main.utils.L;
+import nl.marcelhollink.mmorpg.frontend.main.utils.Logger;
 import nl.marcelhollink.mmorpg.frontend.main.view.StringCenter;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -19,7 +20,8 @@ public class LoginState extends GameState {
             '1','2','3','4','5','6','7','8','9','0'
     };
 
-    private Image background;
+    private BufferedImage background;
+    private BufferedImage sign;
 
     String username = "";
     boolean editUsername = true;
@@ -30,8 +32,8 @@ public class LoginState extends GameState {
 
     private boolean hoverSubmit = false;
 
-    Point usernamePos = new Point(100,270);
-    Point passwordPos = new Point(100,340);
+    Point usernamePos = new Point(UI.WIDTH/2 -150,270);
+    Point passwordPos = new Point(UI.WIDTH/2 -150,345);
 
     private boolean alertFalseIdentification;
     private boolean alertNotFoundIdentification;
@@ -42,10 +44,11 @@ public class LoginState extends GameState {
 
     @Override
     public void init() {
-        L.log(L.level.INFO, "Login was initiated");
+        Logger.log(Logger.level.INFO, "Login was initiated");
 
         il = new ImageLoader();
-        background = il.getImage("/login_pika.png");
+        background = il.getImage("/FantasyWorld2.jpg");
+        sign = il.getImage("/signNoArrow.png");
 
         Arrays.sort(alphanumerics);
 
@@ -64,41 +67,42 @@ public class LoginState extends GameState {
     public void draw(Graphics2D g) {
         //draw Background
         g.clearRect(0,0, UI.WIDTH, UI.HEIGHT);
-        g.drawImage(background, UI.WIDTH/4, UI.HEIGHT/6, null);
+        g.drawImage(background, 0, 0, UI.WIDTH, UI.HEIGHT, null);
 
         g.setColor(UI.mainColor);
         g.setFont(UI.titleFont);
-        int start = StringCenter.center(UI.TITLE, g)-UI.WIDTH/4;
-        g.drawString(UI.TITLE, start, UI.TITLEPOS.y);
+        int start = StringCenter.center(UI.TITLE, g);
+        g.drawString(UI.TITLE, start, UI.TITLEPOINT.y);
         for (int i = 0; i < 4; i++) {
-            g.drawLine(start,UI.TITLEPOS.y+10+i, (int) (g.getFontMetrics().getStringBounds(UI.TITLE,g).getWidth()+start),UI.TITLEPOS.y+10+i);
+            g.drawLine(start,UI.TITLEPOINT.y+10+i, (int) (g.getFontMetrics().getStringBounds(UI.TITLE,g).getWidth()+start),UI.TITLEPOINT.y+10+i);
         }
 
         // draw credits
         g.setFont(new Font("Arial", Font.PLAIN, 21));
         int csLength = (int)
                 g.getFontMetrics().getStringBounds("by Marcel Hollink", g).getWidth();
-        g.drawString("by Marcel Hollink", (start+csLength),UI.TITLEPOS.y+35);
+        g.drawString("by Marcel Hollink", (start+csLength),UI.TITLEPOINT.y+35);
 
         g.setFont(UI.font);
 
-        drawTextField(editUsername,"Username",username,usernamePos,g);
+        g.drawImage(sign, UI.WIDTH/2-200,235,400,85,null);
+        g.drawImage(sign, UI.WIDTH/2+200,310,-400,85,null);
+        g.drawImage(sign, UI.WIDTH/2-200,385,400,85,null);
+
+        drawTextField(editUsername, "Username", username, usernamePos, g);
         drawTextField(editPassword,"Password",passwordLength,passwordPos,g);
 
         if(hoverSubmit) g.setColor(UI.mainColor);
         else g.setColor(UI.disabledColor);
-        g.fillRoundRect(passwordPos.x, passwordPos.y + 70, 250, 30, 12, 12);
-        g.setColor(Color.BLACK);
-        g.drawString("Login", passwordPos.x + 82, passwordPos.y + 92);
+        g.drawString("Login", passwordPos.x + 107, passwordPos.y + 92);
 
-        if(alertFalseIdentification) {
-            g.setColor(Color.RED);
-            g.drawString("WRONG USERNAME OR PASSWORD", 50, 50);
-        }
-        if(alertNotFoundIdentification) {
-            g.setColor(Color.RED);
-            g.drawString("USERNAME DOES NOT EXIST", 50, 50);
-        }
+        g.setColor(Color.RED);
+        if(alertFalseIdentification)
+            g.drawString("WRONG USERNAME OR PASSWORD", StringCenter.center("WRONG USERNAME OR PASSWORD",g), UI.HEIGHT-50);
+
+        if(alertNotFoundIdentification)
+            g.drawString("USERNAME DOES NOT EXIST", StringCenter.center("USERNAME DOES NOT EXIST",g), UI.HEIGHT-50);
+
 
         g.setFont(new Font("Arial",Font.ITALIC,12));
         g.setColor(Color.WHITE);
@@ -112,8 +116,7 @@ public class LoginState extends GameState {
     private void drawTextField(boolean hovered, String id, String text, Point position, Graphics2D g){
         if(hovered) g.setColor(UI.mainColor);
         else g.setColor(UI.disabledColor);
-        g.drawString(id, position.x, position.y);
-        g.drawRoundRect(position.x, position.y+10, (int) g.getFontMetrics(UI.titleFont).getStringBounds(UI.TITLE, g).getWidth(), 30, 12, 12);
+        g.drawString(id, StringCenter.center(id,g), position.y);
         g.drawString(text, position.x + 7, position.y + 34);
     }
 
@@ -196,13 +199,20 @@ public class LoginState extends GameState {
     @Override
     public void receive(String data) {
         if(data.contains("/loginSccs")){
-            L.log(L.level.DEBUG, "User has logged in with "+username);
+            Logger.log(Logger.level.INFO, "User has logged in with " + username);
+            ProfileState.user.setUsername(username);
+            alertFalseIdentification = false;
+            alertNotFoundIdentification = false;
             gsc.setState(GameStateController.PROFILESTATE);
         } else if (data.contains("/loginFail") && data.contains("incorrect")) {
             username = ""; password = ""; passwordLength = "";
             alertFalseIdentification = true;
+            alertNotFoundIdentification = false;
         } else if (data.contains("/loginFail") && data.contains("notFound")) {
+            username = ""; password = ""; passwordLength = "";
+            alertFalseIdentification = false;
             alertNotFoundIdentification = true;
         }
     }
+
 }

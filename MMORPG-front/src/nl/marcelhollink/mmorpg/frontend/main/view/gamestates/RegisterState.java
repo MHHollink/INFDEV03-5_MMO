@@ -1,14 +1,14 @@
 package nl.marcelhollink.mmorpg.frontend.main.view.gamestates;
 
 import nl.marcelhollink.mmorpg.frontend.main.UI;
-import nl.marcelhollink.mmorpg.frontend.main.connection.ClientSocket;
 import nl.marcelhollink.mmorpg.frontend.main.controller.GameStateController;
 import nl.marcelhollink.mmorpg.frontend.main.graphics.ImageLoader;
-import nl.marcelhollink.mmorpg.frontend.main.utils.L;
+import nl.marcelhollink.mmorpg.frontend.main.utils.Logger;
 import nl.marcelhollink.mmorpg.frontend.main.view.StringCenter;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -22,7 +22,8 @@ public class RegisterState extends GameState {
     };
 
     ImageLoader il;
-    private Image background;
+    private BufferedImage background;
+    private BufferedImage sign;
 
     private String
             username = "",
@@ -33,12 +34,12 @@ public class RegisterState extends GameState {
             iban = "";
 
     private Point
-            usernamePos     = new Point(100,200),
-            passwordPos     = new Point(100,270),
-            firstNamePos    = new Point(100,340),
-            lastNamePos     = new Point(100,410),
-            ibanPos         = new Point(100,480),
-            submitPos       = new Point(100,550);
+            usernamePos     = new Point((UI.WIDTH/2)+100,100),
+            passwordPos     = new Point((UI.WIDTH/2)+100,200),
+            firstNamePos    = new Point((UI.WIDTH/2)+100,300),
+            lastNamePos     = new Point((UI.WIDTH/2)+100,400),
+            ibanPos         = new Point((UI.WIDTH/2)+100,500),
+            submitPos       = new Point((UI.WIDTH/2)+100,600);
 
     private boolean
             editUsername    = true,
@@ -62,10 +63,11 @@ public class RegisterState extends GameState {
 
     @Override
     public void init() {
-        L.log(L.level.INFO, "RegisterState was initiated");
+        Logger.log(Logger.level.INFO, "RegisterState was initiated");
 
         il = new ImageLoader();
-        background = il.getImage("/login_pika.png");
+        background = il.getImage("/FantasyWorld3.jpg");
+        sign = il.getImage("/signNoArrow.png");
 
         username = "";
         password = "";
@@ -106,21 +108,21 @@ public class RegisterState extends GameState {
     public void draw(Graphics2D g) {
         //draw Background
         g.clearRect(0,0, UI.WIDTH, UI.HEIGHT);
-        g.drawImage(background, UI.WIDTH/4, UI.HEIGHT/6, null);
+        g.drawImage(background, 0, 0, UI.WIDTH, UI.HEIGHT, null);
 
         g.setColor(UI.mainColor);
         g.setFont(UI.titleFont);
         int start = StringCenter.center(UI.TITLE, g)-UI.WIDTH/4;
-        g.drawString(UI.TITLE, start, UI.TITLEPOS.y);
+        g.drawString(UI.TITLE, start, UI.TITLEPOINT.y);
         for (int i = 0; i < 4; i++) {
-            g.drawLine(start,UI.TITLEPOS.y+10+i, (int) (g.getFontMetrics().getStringBounds(UI.TITLE,g).getWidth()+start),UI.TITLEPOS.y+10+i);
+            g.drawLine(start,UI.TITLEPOINT.y+10+i, (int) (g.getFontMetrics().getStringBounds(UI.TITLE,g).getWidth()+start),UI.TITLEPOINT.y+10+i);
         }
 
         // draw credits
         g.setFont(new Font("Arial", Font.PLAIN, 21));
         int csLength = (int)
                 g.getFontMetrics().getStringBounds("by Marcel Hollink", g).getWidth();
-        g.drawString("by Marcel Hollink", (start+csLength),UI.TITLEPOS.y+35);
+        g.drawString("by Marcel Hollink", (start+csLength),UI.TITLEPOINT.y+35);
 
         g.setFont(UI.font);
 
@@ -128,14 +130,14 @@ public class RegisterState extends GameState {
         drawTextField(editPassword,"Password",passwordLength,passwordPos,g);
         drawTextField(editFirstName,"First Name",firstName,firstNamePos,g);
         drawTextField(editLastName,"Last Name",lastName, lastNamePos, g);
-        drawTextField(editIban,"IBAN nubmer",iban,ibanPos,g);
+        drawTextField(editIban,"IBAN",iban,ibanPos,g);
 
         g.setColor(Color.RED);
-        if(usernameLengthIncorrect) g.drawString("5 < 12",usernamePos.x+230, usernamePos.y );
-        if(passwordLengthIncorrect) g.drawString("5 < 12",passwordPos.x+230, passwordPos.y );
-        if(firstNameLengthIncorrect)g.drawString("3 < 24",firstNamePos.x+230,firstNamePos.y);
-        if(lastNameLengthIncorrect) g.drawString("3 < 24",lastNamePos.x+230, lastNamePos.y );
-        if(ibanLengthIncorrect)     g.drawString("!= 18" ,ibanPos.x+230,     ibanPos.y     );
+        if(usernameLengthIncorrect) g.drawString("5 < 12",usernamePos.x+170, usernamePos.y );
+        if(passwordLengthIncorrect) g.drawString("5 < 12",passwordPos.x+170, passwordPos.y );
+        if(firstNameLengthIncorrect)g.drawString("3 < 24",firstNamePos.x+170,firstNamePos.y);
+        if(lastNameLengthIncorrect) g.drawString("3 < 24",lastNamePos.x+170, lastNamePos.y );
+        if(ibanLengthIncorrect)     g.drawString("!= 18" ,ibanPos.x+170,     ibanPos.y     );
         g.drawString(registerErrorMessage,usernamePos.x+230, usernamePos.y);
 
         g.setFont(new Font("Arial",Font.ITALIC,12));
@@ -150,8 +152,8 @@ public class RegisterState extends GameState {
     private void drawTextField(boolean hovered, String id, String text, Point position, Graphics2D g){
         if(hovered) g.setColor(UI.mainColor);
         else g.setColor(UI.disabledColor);
+        g.drawImage(sign, position.x-40,position.y-40,350,90,null);
         g.drawString(id, position.x, position.y);
-        g.drawRoundRect(position.x, position.y+10, (int) g.getFontMetrics(UI.titleFont).getStringBounds(UI.TITLE, g).getWidth(), 30, 12, 12);
         g.drawString(text, position.x + 7, position.y + 34);
     }
 
@@ -256,4 +258,5 @@ public class RegisterState extends GameState {
             registerErrorMessage = data.split("'")[1];
         }
     }
+
 }

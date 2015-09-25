@@ -8,8 +8,6 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.IOException;
 
-import static nl.marcelhollink.mmorpg.frontend.main.UI.isDebug;
-
 public class GameFrame extends JFrame {
 
     private GamePanel panel;
@@ -21,9 +19,6 @@ public class GameFrame extends JFrame {
         setContentPane(panel);
 
         setTitle(UI.TITLE);
-        if (isDebug()) {
-            setTitle(UI.TITLE +" - "+ UI.BUILD);
-        }
 
         this.addWindowListener(new WindowListener() {
             @Override

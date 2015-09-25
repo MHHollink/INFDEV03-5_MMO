@@ -29,7 +29,7 @@ public class User {
     private String lastPayment;
 
     @Column(name = "payed_until")
-    private String payedUntil;
+    private int daysLeft;
 
     @Column(name = "iban", unique = true)
     private String iban;
@@ -74,7 +74,7 @@ public class User {
         return balance;
     }
 
-    public void setBalance(int balance) {
+    public void setBalance(double balance) {
         this.balance = balance;
     }
 
@@ -86,12 +86,12 @@ public class User {
         this.lastPayment = lastPayment;
     }
 
-    public String getPayedUntil() {
-        return payedUntil;
+    public int getDaysLeft() {
+        return daysLeft;
     }
 
-    public void setPayedUntil(String payedUntil) {
-        this.payedUntil = payedUntil;
+    public void setDaysLeft(int daysLeft) {
+        this.daysLeft = daysLeft;
     }
 
     public String getIban() {

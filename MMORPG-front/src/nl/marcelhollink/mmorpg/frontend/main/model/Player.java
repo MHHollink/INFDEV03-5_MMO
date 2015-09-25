@@ -6,8 +6,8 @@ public class Player {
     String firstName,lastName;
 
     double balance;
-    int lastPayment, monthsPayedFor;
-    boolean banned;
+    String lastPayment;
+    int monthsPayedFor;
 
     int characterSlots;
 
@@ -15,14 +15,13 @@ public class Player {
 
     String password = null;
 
-    public Player(String username, String firstName, String lastName, double balance, int lastPayment, int monthsPayedFor, boolean banned, int characterSlots, String iban) {
+    public Player(String username, String firstName, String lastName, double balance, String lastPayment, int monthsPayedFor, int characterSlots, String iban) {
         this.username = username;
         this.firstName = firstName;
         this.lastName = lastName;
         this.balance = balance;
         this.lastPayment = lastPayment;
-        this.monthsPayedFor = monthsPayedFor;
-        this.banned = banned;
+        this.monthsPayedFor = monthsPayedFor;;
         this.characterSlots = characterSlots;
         this.iban = iban;
     }
@@ -43,16 +42,12 @@ public class Player {
         return balance;
     }
 
-    public int getLastPayment() {
+    public String getLastPayment() {
         return lastPayment;
     }
 
     public int getMonthsPayedFor() {
         return monthsPayedFor;
-    }
-
-    public boolean isBanned() {
-        return banned;
     }
 
     public int getCharacterSlots() {
@@ -79,16 +74,12 @@ public class Player {
         this.balance = balance;
     }
 
-    public void setLastPayment(int lastPayment) {
+    public void setLastPayment(String lastPayment) {
         this.lastPayment = lastPayment;
     }
 
     public void setMonthsPayedFor(int monthsPayedFor) {
         this.monthsPayedFor = monthsPayedFor;
-    }
-
-    public void setBanned(boolean banned) {
-        this.banned = banned;
     }
 
     public void setCharacterSlots(int characterSlots) {

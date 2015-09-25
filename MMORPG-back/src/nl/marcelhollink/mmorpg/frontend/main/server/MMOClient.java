@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Scanner;
-import java.util.logging.Level;
 
 @SuppressWarnings({"UnnecessaryLocalVariable", "FieldCanBeLocal"})
 public class MMOClient implements Runnable{
@@ -51,7 +50,7 @@ public class MMOClient implements Runnable{
                 .addAnnotatedClass(UserOwnsCharacter.class)
                     .buildSessionFactory(ssr);
 
-        System.out.println(clientPrefix +"created...");
+        Logger.log(Logger.level.INFO, clientPrefix + " created...");
     }
 
     @Override
@@ -69,7 +68,7 @@ public class MMOClient implements Runnable{
                     String data = input.nextLine();
                     String[] args = data.split(" ");
                     if(data.contains("/connect")){
-                        System.out.println(clientPrefix +"connected...");
+                        Logger.log(Logger.level.INFO, clientPrefix + " connected...");
                         output.println("/serverID Netherlands-NL01");
                         output.println("/currentlyOnline you are currently online with "+server.clients.size()+"others!");
                         output.println("/exitSplash");
@@ -89,6 +88,16 @@ public class MMOClient implements Runnable{
                     if(data.contains("/attemptedLogin")){
                         output.println(login(args));
                     }
+                    if(data.contains("/request")){
+                        if(args[1].equals("userDetails")){
+                            output.println(requestUserDetail(args));
+                            Logger.log(Logger.level.INFO,clientPrefix+" received user details");
+                        }
+                    }
+                    if(data.contains("/UserCheatCodePlusTwentyBalanceInsert")){
+                        Logger.log(Logger.level.WARN,clientPrefix+" has cheated!");
+                        updateBalance(new String[]{"0", "20"});
+                    }
                 }
 
             }
@@ -96,10 +105,50 @@ public class MMOClient implements Runnable{
 
         }catch (Exception e){
             active = false;
-            System.out.println(clientPrefix +"had en error!");
+            Logger.log(Logger.level.ERROR,clientPrefix +" had en error!");
         }
-        System.out.println(clientPrefix +"has disconnected");
+        Logger.log(Logger.level.INFO,clientPrefix +" has disconnected");
         server.clients.remove(this);
+    }
+
+    private String updateBalance(String[] args) {
+        String response = "";
+
+        Session session = sf.openSession();
+        session.beginTransaction();
+
+        User user = session.get(User.class, clientPrefix);
+        user.setBalance(user.getBalance()+Double.parseDouble(args[1]));
+
+        session.save(user);
+        session.getTransaction().commit();
+        session.close();
+
+        response = "updated user balance with "+args[1];
+
+        return response;
+    }
+
+    private String requestUserDetail(String[] args) {
+        Logger.log(Logger.level.INFO, clientPrefix + " requested user details for user [" + args[2] + "]");
+        String response = "/userDetails ";
+
+        Session session = sf.openSession();
+        session.beginTransaction();
+
+        User user = session.get(User.class, args[2]);
+
+        response = response.concat(user.getUsername()+" ");
+        response = response.concat(user.getFName()+" ");
+        response = response.concat(user.getLName()+" ");
+        response = response.concat(user.getBalance()+" ");
+        response = response.concat(user.getLastPayment()+" ");
+        response = response.concat(user.getDaysLeft()+" ");
+        response = response.concat(user.getSlots()+" ");
+        response = response.concat(user.getIban()+" ");
+
+        session.close();
+        return response;
     }
 
     private String registerUser(String[] args) {
@@ -109,11 +158,11 @@ public class MMOClient implements Runnable{
         session.beginTransaction();
 
         if(session.get(User.class, args[1])!=null){
-            System.out.println(clientPrefix+"tried to save an existing user!");
+           Logger.log(Logger.level.INFO,clientPrefix+" tried to save an existing user!");
 
             response = "/registerR-or 'Username Already exists";
         } else {
-            System.out.println(clientPrefix+"started the creation of a user");
+            Logger.log(Logger.level.INFO, clientPrefix + " started the creation of a user");
 
             User user = new User();
             user.setUsername(args[1]);
@@ -125,30 +174,36 @@ public class MMOClient implements Runnable{
             user.setBalance(0);
             user.setSlots(1);
 
-            user.setLastPayment("");
-            user.setPayedUntil("");
+            user.setLastPayment("NONE");
+            user.setDaysLeft(0);
 
             session.save(user);
             session.getTransaction().commit();
 
-            System.out.println(clientPrefix+"saved a new user in the database");
+            Logger.log(Logger.level.INFO, clientPrefix + " saved a new user in the database");
             response = "/registerSccs";
         }
+
+        session.close();
         return response;
     }
 
     private String registerCharacter(String[] args) {
         String response = "";
 
-        // TODO : REGISTER USERS
+        Session session = sf.openSession();
+        session.beginTransaction();
 
+        // TODO : REGISTER CHARACTER
+
+        session.close();
         return response;
     }
 
     private String login(String[] args) {
         String response = "";
 
-        System.out.println(clientPrefix+"tries to login");
+        Logger.log(Logger.level.INFO, clientPrefix + " tries to login");
 
         Session session = sf.openSession();
         session.beginTransaction();
@@ -157,19 +212,77 @@ public class MMOClient implements Runnable{
             User user = session.get(User.class, args[1]);
             if (user.getPassword().equals(args[2])){
                 response = "/loginSccs";
-                System.out.println(clientPrefix+"logged in as "+args[1]);
-                System.out.println(clientPrefix+"is now known as "+args[1]);
-                clientPrefix = args[1]+": ";
+                Logger.log(Logger.level.INFO, clientPrefix + " logged in as " + args[1]);
+                Logger.log(Logger.level.INFO, clientPrefix + " is now known as " + args[1]);
+                clientPrefix = args[1];
             } else {
-                System.out.println(clientPrefix+"logging in with wrong identification");
+                Logger.log(Logger.level.INFO, clientPrefix + " logging in with wrong identification");
                 response = "/loginFail incorrect";
             }
         } else {
-            System.out.println(clientPrefix+"username was not found when logging in");
+            Logger.log(Logger.level.INFO, clientPrefix + " username was not found when logging in");
             response = "/loginFail notFound";
         }
 
+        session.close();
         return response;
+    }
+
+    private String buyMoreDays(String[] args){
+        int months = Integer.parseInt(args[2]);
+
+        Logger.log(Logger.level.INFO, clientPrefix + " is trying to buy " + months + " more months");
+
+        Session session = sf.openSession();
+        session.beginTransaction();
+
+        User user = session.get(User.class, clientPrefix);
+        double balance = user.getBalance();
+
+        switch (months) {
+            case 1:
+                // One more months
+                if ( balance - 5 > 0) {
+                    // payment successful
+                    return paymentSuccess(user, balance, 5.0, 31, session);
+                }
+                return "/buyMonthError NoMoney "+(balance-5);
+            case 2:
+                // Two more months
+                if ( balance - 8 > 0) {
+                    // payment successful
+                    return paymentSuccess(user, balance, 8.0, 61, session);
+                }
+                return "/buyMonthError NoMoney "+(balance-8);
+            case 3:
+                // Three more months
+                if ( balance - 10 > 0) {
+                    // payment successful
+                    return paymentSuccess(user, balance, 10.0, 92, session);
+                }
+                return "/buyMonthError NoMoney "+(balance-10);
+            case 12:
+                // One whole year
+                if ( balance - 35 > 0) {
+                    // payment successful
+                    return paymentSuccess(user,balance,35.0,365,session);
+                }
+                return "/buyMonthError NoMoney "+(balance-35);
+        }
+
+        // This should never happen!!
+        return "/buyMonthError 'not the right amounts of months was entered'";
+    }
+
+    private String paymentSuccess(User user, double balance, double payed, int days, Session session){
+        user.setBalance(balance-payed);
+        user.setDaysLeft(user.getDaysLeft()+days);
+        session.update(user);
+        session.getTransaction().commit();
+        session.close();
+        Logger.log(Logger.level.INFO, clientPrefix + " bought a " + days + "days subscription");
+        Logger.log(Logger.level.TRACE," HURRAY, WE GOT MONEY!");
+        return "/buyMonthSucces "+days;
     }
 
 }

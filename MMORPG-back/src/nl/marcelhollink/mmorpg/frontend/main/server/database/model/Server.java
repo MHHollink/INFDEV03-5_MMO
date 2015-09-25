@@ -25,6 +25,9 @@ public class Server {
     @Column(name = "connected", nullable = false)
     private int connectedUsers;
 
+    @Column(name = "active", nullable = false)
+    private boolean active;
+
 
     public String getAddress() {
         return address;
@@ -64,5 +67,13 @@ public class Server {
 
     public void setConnectedUsers(int connectedUsers) {
         this.connectedUsers = connectedUsers;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 }

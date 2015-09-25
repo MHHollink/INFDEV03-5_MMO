@@ -4,8 +4,8 @@ import nl.marcelhollink.mmorpg.frontend.main.controller.GameStateController;
 
 import java.awt.*;
 
-public class AvatarOverviewState extends GameState {
-    public AvatarOverviewState(GameStateController gsc) {
+public class CharacterManagerState extends GameState{
+    public CharacterManagerState(GameStateController gsc) {
         this.gsc = gsc;
     }
 
@@ -38,4 +38,5 @@ public class AvatarOverviewState extends GameState {
     public void receive(String s) {
 
     }
+
 }

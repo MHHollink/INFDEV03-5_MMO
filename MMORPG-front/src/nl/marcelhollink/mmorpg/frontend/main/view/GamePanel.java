@@ -4,9 +4,12 @@ import nl.marcelhollink.mmorpg.frontend.main.UI;
 import nl.marcelhollink.mmorpg.frontend.main.controller.GameStateController;
 
 import javax.swing.*;
+import javax.swing.plaf.basic.BasicSliderUI;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 
 public class GamePanel extends JPanel  implements Runnable, KeyListener {
@@ -102,10 +105,7 @@ public class GamePanel extends JPanel  implements Runnable, KeyListener {
         gsc.keyReleased(key.getKeyCode());
     }
 
-
     public GameStateController getGsc() {
         return gsc;
     }
-
-
 }

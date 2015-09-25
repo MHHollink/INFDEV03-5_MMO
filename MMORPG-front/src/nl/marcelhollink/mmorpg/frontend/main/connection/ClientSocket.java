@@ -1,12 +1,17 @@
 package nl.marcelhollink.mmorpg.frontend.main.connection;
 
 import nl.marcelhollink.mmorpg.frontend.main.UI;
-import nl.marcelhollink.mmorpg.frontend.main.utils.L;
+import nl.marcelhollink.mmorpg.frontend.main.utils.Logger;
 
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
 
+/**
+ * The ClientSocket is the instantiation class for the ServerConnection.
+ *
+ * The class will create a socket connection with the server and gives it to the ServerConnectionRunnable
+ */
 public class ClientSocket {
 
     final int port;
@@ -20,7 +25,7 @@ public class ClientSocket {
         this.port = port;
 
         try {
-            if(UI.isDebug()){
+            if (UI.LOCAL) {
                 server = new Socket(InetAddress.getLocalHost(), port);
             } else {
                 server = new Socket(ip, port);
@@ -28,13 +33,18 @@ public class ClientSocket {
 
             runnable = new ServerConnectionRunnable(server);
             new Thread(runnable).start();
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             e.printStackTrace();
-            L.log(L.level.ERROR, "Server connection time out");
+            Logger.log(Logger.level.ERROR, "Server connection time out");
             System.exit(-1);
         }
     }
 
+    /**
+     * Send a String to the Server via the ServerConnectionRunnable
+     * @param s commando string
+     */
     public void send(String s) {
         runnable.send(s);
     }

@@ -4,8 +4,14 @@ import nl.marcelhollink.mmorpg.frontend.main.controller.GameStateController;
 
 import java.awt.*;
 
-public class AvatarManagerState extends GameState{
-    public AvatarManagerState(GameStateController gsc) {
+/**
+ * This Class was created by marcel on 24-9-2015
+ * Time of creation : 13:05
+ */
+public class ShoppingState extends GameState {
+
+
+    public ShoppingState(GameStateController gsc) {
         this.gsc = gsc;
     }
 
@@ -38,4 +44,5 @@ public class AvatarManagerState extends GameState{
     public void receive(String s) {
 
     }
+
 }

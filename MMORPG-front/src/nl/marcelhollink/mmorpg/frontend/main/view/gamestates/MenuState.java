@@ -3,15 +3,28 @@ package nl.marcelhollink.mmorpg.frontend.main.view.gamestates;
 import nl.marcelhollink.mmorpg.frontend.main.UI;
 import nl.marcelhollink.mmorpg.frontend.main.controller.GameStateController;
 import nl.marcelhollink.mmorpg.frontend.main.graphics.ImageLoader;
-import nl.marcelhollink.mmorpg.frontend.main.utils.L;
+import nl.marcelhollink.mmorpg.frontend.main.utils.Logger;
 import nl.marcelhollink.mmorpg.frontend.main.view.StringCenter;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
-import java.awt.geom.AffineTransform;
-import java.awt.image.AffineTransformOp;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 
+/**
+ * <p>
+ *     The MenuState is the state holding the Menu and Splash Screen
+ *
+ *     When the MenuState is created the boolean 'splashing' will be true.
+ *     Once the server sends the signal that everything is in place, splashing turns to false.
+ *
+ *     The users has the ability to select one of the three options in the menu
+ *
+ *     Login will enter LoginState
+ *     Register will enter RegisterState
+ *     Quit will disconnect from the server, then Exit(0);
+ * </p>
+ */
 public class MenuState extends GameState {
 
     private int currentChoice = 0;
@@ -21,24 +34,39 @@ public class MenuState extends GameState {
             "Quit"
     };
 
-    private Image background;
+    private BufferedImage filler;
+    private BufferedImage sign;
 
     private static boolean splashing;
-    private Image splash;
+    private BufferedImage splash;
+
+    private boolean timedOut = false;
 
     public MenuState(GameStateController gsc) {
         this.gsc = gsc;
         splashing = true;
+
+        il = new ImageLoader();
+
+        filler =  il.getImage("/FantasyWorld.jpg");
+        sign = il.getImage("/sign.png");
+
+        final long start = System.currentTimeMillis();
+        final int timeout = 10000;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (splashing) {
+                    if (start + timeout < start) timedOut = true;
+                }
+            }
+        }).start();
     }
 
     @Override
     public void init() {
-        L.log(L.level.INFO, "MainState was initiated");
-
-        il = new ImageLoader();
-
-        background = il.getImage("/login_pika.png");
-        splash = il.getImage("/splash.png");
+        Logger.log(Logger.level.INFO, "MainState was initiated");
+        splash = il.getImage("/splash.jpg");
     }
 
     @Override
@@ -49,22 +77,26 @@ public class MenuState extends GameState {
         if (!splashing) {
             //draw Background
             g.clearRect(0, 0, UI.WIDTH, UI.HEIGHT);
-            g.drawImage(background, UI.WIDTH / 4, UI.HEIGHT / 6, null);
+            g.drawImage(filler, 0, 0, UI.WIDTH, UI.HEIGHT, null);
 
             // draw title
             g.setColor(UI.mainColor);
             g.setFont(UI.titleFont);
-            int start = StringCenter.center(UI.TITLE, g)-UI.WIDTH/4;
-            g.drawString(UI.TITLE, start, UI.TITLEPOS.y);
+            int start = StringCenter.center(UI.TITLE, g);
+            g.drawString(UI.TITLE, start, UI.TITLEPOINT.y);
             for (int i = 0; i < 4; i++) {
-                g.drawLine(start,UI.TITLEPOS.y+10+i, (int) (g.getFontMetrics().getStringBounds(UI.TITLE,g).getWidth()+start),UI.TITLEPOS.y+10+i);
+                g.drawLine(start, UI.TITLEPOINT.y + 10 + i, (int) (g.getFontMetrics().getStringBounds(UI.TITLE, g).getWidth() + start), UI.TITLEPOINT.y + 10 + i);
             }
+
+            g.drawImage(sign, (UI.WIDTH / 2) - 140, 190, 300, 200, null);
+            g.drawImage(sign, (UI.WIDTH / 2) - 140, 240, 300, 200, null);
+            g.drawImage(sign, (UI.WIDTH / 2) + 140, 290, -300, 200, null);
 
             // draw credits
             g.setFont(new Font("Arial", Font.PLAIN, 21));
             int csLength = (int)
                     g.getFontMetrics().getStringBounds("by Marcel Hollink", g).getWidth();
-            g.drawString("by Marcel Hollink", (start+csLength),UI.TITLEPOS.y+35);
+            g.drawString("by Marcel Hollink", (start + csLength), UI.TITLEPOINT.y + 35);
 
             g.setFont(UI.font);
 
@@ -74,7 +106,7 @@ public class MenuState extends GameState {
                 } else {
                     g.setColor(UI.disabledColor);
                 }
-                g.drawString(options[i], StringCenter.center(options[i], g) - UI.WIDTH / 4, 300 + i * 38);
+                g.drawString(options[i], StringCenter.center(options[i], g), 300 + i * 50);
             }
 
             g.setFont(new Font("Arial", Font.ITALIC, 12));
@@ -84,12 +116,24 @@ public class MenuState extends GameState {
                     (int) ((UI.WIDTH - 10) - g.getFontMetrics().getStringBounds(UI.BUILD, g).getWidth()),
                     (UI.HEIGHT - 10)
             );
-
         } else {
-            //draw Background
-            g.clearRect(0, 0, UI.WIDTH, UI.HEIGHT);
-            g.drawImage(splash, (UI.WIDTH / 2)-100, (UI.HEIGHT / 2)-100, null);
-
+            if(hasTimedOut()){
+                g.clearRect(0, 0, UI.WIDTH, UI.HEIGHT);
+                g.drawString(
+                        "Server has problems connecting you,",
+                        StringCenter.center("Server has problems connecting you,", g),
+                        100
+                );
+                g.drawString(
+                        "Please try again later!",
+                        StringCenter.center("Please try again later!", g),
+                        100
+                );
+            } else {
+                //draw Background
+                g.clearRect(0, 0, UI.WIDTH, UI.HEIGHT);
+                g.drawImage(splash, 0, 0, null);
+            }
         }
     }
 
@@ -147,14 +191,20 @@ public class MenuState extends GameState {
     }
 
     @Override
-    public void keyReleased(int k) {    }
+    public void keyReleased(int k) { }
 
     @Override
     public void receive(String s) {
 
     }
 
+
+
     public static void stopSplash(){
         splashing = false;
+    }
+
+    public boolean hasTimedOut() {
+        return timedOut;
     }
 }

@@ -2,7 +2,7 @@ package nl.marcelhollink.mmorpg.frontend.main.connection;
 
 import nl.marcelhollink.mmorpg.frontend.main.UI;
 import nl.marcelhollink.mmorpg.frontend.main.controller.GameStateController;
-import nl.marcelhollink.mmorpg.frontend.main.utils.L;
+import nl.marcelhollink.mmorpg.frontend.main.utils.Logger;
 import nl.marcelhollink.mmorpg.frontend.main.view.gamestates.MenuState;
 
 import java.io.IOException;
@@ -39,10 +39,10 @@ public class ServerConnectionRunnable implements Runnable{
 
                     if(data.contains("/serverID")){
                         UI.serverID = data.split(" ")[1];
-                        L.log(L.level.INFO, "Connected to server "+UI.serverID);
+                        Logger.log(Logger.level.INFO, "Connected to server " + UI.serverID);
                     }
                     if(data.contains("/currentlyOnline")){
-                        L.log(L.level.INFO, data.substring(17));
+                        Logger.log(Logger.level.INFO, data.substring(17));
                     }
                     if(data.contains("/exitSplash")){
                         MenuState.stopSplash();
@@ -52,6 +52,9 @@ public class ServerConnectionRunnable implements Runnable{
                     }
                     if(data.contains("/login")) {
                         UI.getFrame().getPanel().getGsc().getGameStates().get(GameStateController.LOGINSTATE).receive(data);
+                    }
+                    if(data.contains("/userDetails")){
+                        UI.getFrame().getPanel().getGsc().getGameStates().get(GameStateController.PROFILESTATE).receive(data);
                     }
                 }
             }

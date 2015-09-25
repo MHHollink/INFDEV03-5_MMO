@@ -6,10 +6,11 @@
         <property name="connection.driver_class">org.postgresql.Driver</property>
         <property name="connection.url">jdbc:postgresql:mmorpg</property>
         <property name="connection.username">postgres</property>
-        <property name="connection.password">hidden</property>
+        <property name="connection.password">6bdb81b4</property>
 
-        <!-- JDBC connection pool (use the built-in) -->
+        <!-- JDBC connection pool (use the built-in)
         <property name="connection.pool_size">1</property>
+        -->
 
         <!-- SQL dialect -->
         <property name="dialect">org.hibernate.dialect.PostgreSQL9Dialect</property>
