@@ -1,4 +1,4 @@
-package nl.marcelhollink.mmorpg.frontend.main.server.database.model;
+package nl.marcelhollink.mmorpg.backend.server.database.model;
 
 
 import javax.persistence.Column;

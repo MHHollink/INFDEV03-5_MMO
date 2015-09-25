@@ -1,4 +1,4 @@
-package nl.marcelhollink.mmorpg.frontend.main.server;
+package nl.marcelhollink.mmorpg.backend.server;
 
 import java.util.Date;
 

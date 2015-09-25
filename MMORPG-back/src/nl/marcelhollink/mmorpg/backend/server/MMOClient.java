@@ -1,7 +1,7 @@
-package nl.marcelhollink.mmorpg.frontend.main.server;
+package nl.marcelhollink.mmorpg.backend.server;
 
-import nl.marcelhollink.mmorpg.frontend.main.server.database.model.*;
-import nl.marcelhollink.mmorpg.frontend.main.server.database.model.Character;
+import nl.marcelhollink.mmorpg.backend.server.database.model.*;
+import nl.marcelhollink.mmorpg.backend.server.database.model.Character;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistry;

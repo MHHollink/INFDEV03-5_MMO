@@ -1,11 +1,4 @@
-package nl.marcelhollink.mmorpg.frontend.main.server;
-
-import nl.marcelhollink.mmorpg.frontend.main.server.database.model.*;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.boot.registry.StandardServiceRegistry;
-import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
-import org.hibernate.cfg.Configuration;
+package nl.marcelhollink.mmorpg.backend.server;
 
 import java.io.IOException;
 import java.net.ServerSocket;
