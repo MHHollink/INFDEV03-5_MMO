@@ -34,7 +34,7 @@ public class AvatarManagerState extends GameState{
         }
 
         if (k == KeyEvent.VK_Y) {
-            UI.clientSocket.send("/regiChar "+ProfileState.user.getUsername()+" mjollnir");
+            UI.clientSocket.send("/regiChar "+ProfileState.user.getUsername()+" mjollnir male");
 
         }
     }

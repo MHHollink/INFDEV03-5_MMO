@@ -19,20 +19,12 @@ public class Character implements Serializable{
     @Column(name = "gender", nullable = false)
     private String gender;
 
-    @Column(name = "combat_level", nullable = false)
-    private int combat_level;
-
-    @Column(name = "skill_level", nullable = false)
-    private int skill_level;
-
     @Column(name = "balance", nullable = false)
     private int balance;
 
     public Character(String characterName, String gender, int combat_level, int skill_level, int balance) {
         this.characterName = characterName;
         this.gender = gender;
-        this.combat_level = combat_level;
-        this.skill_level = skill_level;
         this.balance = balance;
     }
 
@@ -61,21 +53,5 @@ public class Character implements Serializable{
 
     public void setBalance(int balance) {
         this.balance = balance;
-    }
-
-    public int getCombat_level() {
-        return combat_level;
-    }
-
-    public void setCombat_level(int combat_level) {
-        this.combat_level = combat_level;
-    }
-
-    public int getSkill_level() {
-        return skill_level;
-    }
-
-    public void setSkill_level(int skill_level) {
-        this.skill_level = skill_level;
     }
 }

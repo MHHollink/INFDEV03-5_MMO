@@ -176,11 +176,11 @@ public class MMOClient implements Runnable{
         session.beginTransaction();
 
         if(session.get(nl.marcelhollink.mmorpg.backend.server.database.model.Character.class, args[2])!=null){
-            Logger.log(Logger.level.WARN, "tried to save over an existing character!");
+            Logger.log(Logger.level.WARN, clientPrefix + " tried to save over an existing character!");
             response += "/createCharacter error alreadyExists";
         } else {
             if(session.get(User.class, args[1])!=null){
-                Logger.log(Logger.level.INFO, "saving character");
+                Logger.log(Logger.level.INFO, clientPrefix + " saving character");
                 User user = session.get(User.class, args[1]);
 
                 Character character = new Character();
@@ -191,7 +191,7 @@ public class MMOClient implements Runnable{
 
                 session.save(character);
 
-                Logger.log(Logger.level.INFO, "creating user --|< charracter relationship");
+                Logger.log(Logger.level.INFO, clientPrefix + " creating user --|< charracter relationship");
                 UserOwnsCharacter uoc = new UserOwnsCharacter();
 
                 uoc.setUsername(user);
@@ -199,7 +199,7 @@ public class MMOClient implements Runnable{
 
                 session.save(uoc);
 
-                Logger.log(Logger.level.INFO, "creating character_skills entry in database");
+                Logger.log(Logger.level.INFO, clientPrefix + " creating character_skills entry in database");
                 CharacterSkills cs = new CharacterSkills(
                         character,
                         7, // total of all levels
