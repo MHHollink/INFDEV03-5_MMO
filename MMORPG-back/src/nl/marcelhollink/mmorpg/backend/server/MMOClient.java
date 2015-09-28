@@ -1,12 +1,7 @@
 package nl.marcelhollink.mmorpg.backend.server;
 
-import nl.marcelhollink.mmorpg.backend.server.database.model.*;
-import nl.marcelhollink.mmorpg.backend.server.database.model.Character;
+import nl.marcelhollink.mmorpg.backend.server.database.model.User;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.boot.registry.StandardServiceRegistry;
-import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
-import org.hibernate.cfg.Configuration;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -26,9 +21,6 @@ public class MMOClient implements Runnable{
     private Scanner input;
     private PrintWriter output;
 
-    SessionFactory sf;
-    Configuration conf;
-
     private String clientPrefix;
 
     public MMOClient(MMOServer server, Socket clientSocket, int connectionID) {
@@ -37,18 +29,6 @@ public class MMOClient implements Runnable{
         this.connectionID = connectionID;
 
         this.clientPrefix = "Client "+connectionID+" ";
-
-        this.conf = new Configuration();
-        conf.configure();
-        StandardServiceRegistry ssr = new StandardServiceRegistryBuilder().applySettings(conf.getProperties()).build();
-
-        this.sf = conf
-                .addAnnotatedClass(Character.class)
-                .addAnnotatedClass(Server.class)
-                .addAnnotatedClass(ServerContainsCharacter.class)
-                .addAnnotatedClass(User.class)
-                .addAnnotatedClass(UserOwnsCharacter.class)
-                    .buildSessionFactory(ssr);
 
         Logger.log(Logger.level.INFO, clientPrefix + " created...");
     }
@@ -70,7 +50,7 @@ public class MMOClient implements Runnable{
                     if(data.contains("/connect")){
                         Logger.log(Logger.level.INFO, clientPrefix + " connected...");
                         output.println("/serverID Netherlands-NL01");
-                        output.println("/currentlyOnline you are currently online with "+server.clients.size()+"others!");
+                        output.println("/currentlyOnline currently online : "+server.clients.size());
                         output.println("/exitSplash");
                     }
 
@@ -114,7 +94,7 @@ public class MMOClient implements Runnable{
     private String updateBalance(String[] args) {
         String response = "";
 
-        Session session = sf.openSession();
+        Session session = server.sf.openSession();
         session.beginTransaction();
 
         User user = session.get(User.class, clientPrefix);
@@ -133,7 +113,7 @@ public class MMOClient implements Runnable{
         Logger.log(Logger.level.INFO, clientPrefix + " requested user details for user [" + args[2] + "]");
         String response = "/userDetails ";
 
-        Session session = sf.openSession();
+        Session session = server.sf.openSession();
         session.beginTransaction();
 
         User user = session.get(User.class, args[2]);
@@ -154,7 +134,7 @@ public class MMOClient implements Runnable{
     private String registerUser(String[] args) {
         String response = "";
 
-        Session session = sf.openSession();
+        Session session = server.sf.openSession();
         session.beginTransaction();
 
         if(session.get(User.class, args[1])!=null){
@@ -191,7 +171,7 @@ public class MMOClient implements Runnable{
     private String registerCharacter(String[] args) {
         String response = "";
 
-        Session session = sf.openSession();
+        Session session = server.sf.openSession();
         session.beginTransaction();
 
         // TODO : REGISTER CHARACTER
@@ -205,7 +185,7 @@ public class MMOClient implements Runnable{
 
         Logger.log(Logger.level.INFO, clientPrefix + " tries to login");
 
-        Session session = sf.openSession();
+        Session session = server.sf.openSession();
         session.beginTransaction();
 
         if(session.get(User.class, args[1])!=null){
@@ -233,7 +213,7 @@ public class MMOClient implements Runnable{
 
         Logger.log(Logger.level.INFO, clientPrefix + " is trying to buy " + months + " more months");
 
-        Session session = sf.openSession();
+        Session session = server.sf.openSession();
         session.beginTransaction();
 
         User user = session.get(User.class, clientPrefix);
@@ -283,6 +263,10 @@ public class MMOClient implements Runnable{
         Logger.log(Logger.level.INFO, clientPrefix + " bought a " + days + "days subscription");
         Logger.log(Logger.level.TRACE," HURRAY, WE GOT MONEY!");
         return "/buyMonthSucces "+days;
+    }
+
+    public void disconnect(){
+        active = false;
     }
 
 }

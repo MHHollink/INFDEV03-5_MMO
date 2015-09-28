@@ -18,4 +18,11 @@ public class Logger {
 
             System.out.println(date + " >> " + level + ": " + text);
     }
+
+    public static void log(level level, int errorCode, String text) {
+        Date d = new Date();
+        String date = d.toLocaleString() ;
+
+        System.out.println(date + " >> " + level + ": " + text);
+    }
 }

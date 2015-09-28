@@ -5,11 +5,12 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.io.Serializable;
 
 
 @Entity
 @Table(name = "characters", schema = "public")
-public class Character {
+public class Character implements Serializable{
 
     @Id
     @Column(name = "name", nullable = false, unique = true)

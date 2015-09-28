@@ -37,14 +37,13 @@ public class MenuState extends GameState {
     private BufferedImage filler;
     private BufferedImage sign;
 
-    private static boolean splashing;
+    private static boolean splashing = true;
     private BufferedImage splash;
 
     private boolean timedOut = false;
 
     public MenuState(GameStateController gsc) {
         this.gsc = gsc;
-        splashing = true;
 
         il = new ImageLoader();
 

@@ -1,9 +1,17 @@
 package nl.marcelhollink.mmorpg.backend.server;
 
+import nl.marcelhollink.mmorpg.backend.server.database.model.*;
+import org.hibernate.SessionFactory;
+import org.hibernate.boot.registry.StandardServiceRegistry;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.cfg.Configuration;
+
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Scanner;
 import java.util.logging.Level;
 
 @SuppressWarnings("FieldCanBeLocal")
@@ -17,9 +25,27 @@ public class MMOServer {
     private static ServerSocket server;
     ArrayList<MMOClient> clients;
 
+    SessionFactory sf;
+    Configuration conf;
+
+    private Scanner commandLineScanner;
+
     public MMOServer() {
+        this.commandLineScanner = new Scanner(System.in);
         boolean active = true;
         java.util.logging.Logger.getLogger("org.hibernate").setLevel(Level.WARNING);
+
+        this.conf = new Configuration();
+        conf.configure();
+        StandardServiceRegistry ssr = new StandardServiceRegistryBuilder().applySettings(conf.getProperties()).build();
+
+        this.sf = conf
+                .addAnnotatedClass(nl.marcelhollink.mmorpg.backend.server.database.model.Character.class)
+                .addAnnotatedClass(Server.class)
+                .addAnnotatedClass(ServerContainsCharacter.class)
+                .addAnnotatedClass(User.class)
+                .addAnnotatedClass(UserOwnsCharacter.class)
+                .buildSessionFactory(ssr);
 
         try {
             server = new ServerSocket(PORT);
@@ -27,13 +53,24 @@ public class MMOServer {
 
             Logger.log(Logger.level.INFO, "Server has started");
 
-            //noinspection ConstantConditions
             while(active){
                 Socket clientSocket = server.accept();
                 MMOClient client = new MMOClient(this, clientSocket, clients.size());
 
                 clients.add(client);
                 new Thread(client).start();
+
+//                TODO : DOES NOT WORK
+                if(commandLineScanner.hasNextLine()){
+                    System.out.println("nexts");
+                    String command = commandLineScanner.nextLine();
+
+                    if(command.contains("stop")){
+                        active = false;
+
+                        clients.forEach(MMOClient::disconnect);
+                    }
+                }
             }
         }
         catch (IOException e) {

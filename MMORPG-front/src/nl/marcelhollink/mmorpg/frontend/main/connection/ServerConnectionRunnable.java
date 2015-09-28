@@ -38,22 +38,28 @@ public class ServerConnectionRunnable implements Runnable{
                     final String data = input.nextLine();
 
                     if(data.contains("/serverID")){
+                        Logger.log(Logger.level.DEBUG, "Recieved ["+data+"]");
                         UI.serverID = data.split(" ")[1];
                         Logger.log(Logger.level.INFO, "Connected to server " + UI.serverID);
                     }
                     if(data.contains("/currentlyOnline")){
+                        Logger.log(Logger.level.DEBUG, "Recieved ["+data+"]");
                         Logger.log(Logger.level.INFO, data.substring(17));
                     }
                     if(data.contains("/exitSplash")){
+                        Logger.log(Logger.level.DEBUG, "Recieved ["+data+"]");
                         MenuState.stopSplash();
                     }
                     if(data.contains("/register")) {
+                        Logger.log(Logger.level.DEBUG, "Recieved ["+data+"]");
                         UI.getFrame().getPanel().getGsc().getGameStates().get(GameStateController.REGISTERSTATE).receive(data);
                     }
                     if(data.contains("/login")) {
+                        Logger.log(Logger.level.DEBUG, "Recieved ["+data+"]");
                         UI.getFrame().getPanel().getGsc().getGameStates().get(GameStateController.LOGINSTATE).receive(data);
                     }
                     if(data.contains("/userDetails")){
+                        Logger.log(Logger.level.DEBUG, "Recieved ["+data+"]");
                         UI.getFrame().getPanel().getGsc().getGameStates().get(GameStateController.PROFILESTATE).receive(data);
                     }
                 }
