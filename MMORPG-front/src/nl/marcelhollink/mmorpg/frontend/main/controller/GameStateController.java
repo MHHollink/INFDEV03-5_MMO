@@ -1,5 +1,6 @@
 package nl.marcelhollink.mmorpg.frontend.main.controller;
 
+import nl.marcelhollink.mmorpg.frontend.main.model.gamestates.ProfileManagerState;
 import nl.marcelhollink.mmorpg.frontend.main.view.gamestates.*;
 
 import java.awt.*;
@@ -22,8 +23,9 @@ public class GameStateController {
             LOGINSTATE = 3,
             REGISTERSTATE = 4,
             PROFILESTATE = 5,
-            AVATARMANAGER = 6,
-            SHOPPINGSTATE = 7;
+            PROFILEMANAGERSTATE = 6,
+            AVATARMANAGERSTATE = 7,
+            SHOPPINGSTATE = 8;
 
     /**
      * Constructs the GSC, Initiate the GameStates-ArrayList and puts all states in it.
@@ -38,7 +40,8 @@ public class GameStateController {
         gameStates.add(new LoginState(this));
         gameStates.add(new RegisterState(this));
         gameStates.add(new ProfileState(this));
-        gameStates.add(new CharacterManagerState(this));
+        gameStates.add(new ProfileManagerState(this));
+        gameStates.add(new AvatarManagerState(this));
         gameStates.add(new ShoppingState(this));
 
         setState(MENUSTATE);

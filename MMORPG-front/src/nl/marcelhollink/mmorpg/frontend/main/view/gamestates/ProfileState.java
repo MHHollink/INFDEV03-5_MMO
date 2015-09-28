@@ -2,12 +2,14 @@ package nl.marcelhollink.mmorpg.frontend.main.view.gamestates;
 
 import nl.marcelhollink.mmorpg.frontend.main.UI;
 import nl.marcelhollink.mmorpg.frontend.main.controller.GameStateController;
+import nl.marcelhollink.mmorpg.frontend.main.graphics.ImageLoader;
 import nl.marcelhollink.mmorpg.frontend.main.model.Player;
 import nl.marcelhollink.mmorpg.frontend.main.utils.Logger;
 import nl.marcelhollink.mmorpg.frontend.main.view.StringCenter;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Arrays;
 
@@ -21,9 +23,14 @@ public class ProfileState extends GameState {
     private boolean topRight = false;
     private boolean bottom = false;
 
+    BufferedImage filler;
+
     public ProfileState(GameStateController gsc) {
         this.gsc = gsc;
         user = new Player(null, null, null, 0, null, 0, 0, null);
+
+        il = new ImageLoader();
+        filler = il.getImage("/FantasyWorld2.jpg");
     }
 
     @Override
@@ -40,6 +47,8 @@ public class ProfileState extends GameState {
     @Override
     public void draw(Graphics2D g) {
         g.clearRect(0, 0, UI.WIDTH, UI.HEIGHT);
+
+        g.drawImage(filler,0,0,UI.WIDTH,UI.HEIGHT,null);
 
         g.setColor(UI.disabledColor);
         // VERTICAL LINE SEPARATOR
@@ -105,7 +114,11 @@ public class ProfileState extends GameState {
     private void select(){
         if(bottom) {
             gsc.setState(GameStateController.SHOPPINGSTATE);
-
+        } else if (topRight) {
+            gsc.setState(GameStateController.AVATARMANAGERSTATE);
+        } else {
+            // Must be topLeft
+            gsc.setState(GameStateController.PROFILEMANAGERSTATE);
         }
     }
 
@@ -144,9 +157,7 @@ public class ProfileState extends GameState {
     public void receive(String data) {
         if (data.contains("/userDetails")) {
             Logger.log(Logger.level.INFO, "data received");
-
             String[] args = data.split(" ");
-            Logger.log(Logger.level.DEBUG, Arrays.toString(args));
             user = new Player(
                     args[1],
                     args[2],

@@ -21,9 +21,9 @@ public class RegisterState extends GameState {
             '1','2','3','4','5','6','7','8','9','0'
     };
 
-    ImageLoader il;
     private BufferedImage background;
     private BufferedImage sign;
+    private BufferedImage logo;
 
     private String
             username = "",
@@ -68,6 +68,7 @@ public class RegisterState extends GameState {
         il = new ImageLoader();
         background = il.getImage("/FantasyWorld3.jpg");
         sign = il.getImage("/signNoArrow.png");
+        logo = il.getImage("/logo.png");
 
         username = "";
         password = "";
@@ -110,19 +111,7 @@ public class RegisterState extends GameState {
         g.clearRect(0,0, UI.WIDTH, UI.HEIGHT);
         g.drawImage(background, 0, 0, UI.WIDTH, UI.HEIGHT, null);
 
-        g.setColor(UI.mainColor);
-        g.setFont(UI.titleFont);
-        int start = StringCenter.center(UI.TITLE, g)-UI.WIDTH/4;
-        g.drawString(UI.TITLE, start, UI.TITLEPOINT.y);
-        for (int i = 0; i < 4; i++) {
-            g.drawLine(start,UI.TITLEPOINT.y+10+i, (int) (g.getFontMetrics().getStringBounds(UI.TITLE,g).getWidth()+start),UI.TITLEPOINT.y+10+i);
-        }
-
-        // draw credits
-        g.setFont(new Font("Arial", Font.PLAIN, 21));
-        int csLength = (int)
-                g.getFontMetrics().getStringBounds("by Marcel Hollink", g).getWidth();
-        g.drawString("by Marcel Hollink", (start+csLength),UI.TITLEPOINT.y+35);
+        g.drawImage(logo,UI.WIDTH/4-250, 50,null);
 
         g.setFont(UI.font);
 

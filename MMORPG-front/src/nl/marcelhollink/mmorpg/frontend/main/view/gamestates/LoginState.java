@@ -22,6 +22,7 @@ public class LoginState extends GameState {
 
     private BufferedImage background;
     private BufferedImage sign;
+    private BufferedImage logo;
 
     String username = "";
     boolean editUsername = true;
@@ -38,6 +39,7 @@ public class LoginState extends GameState {
     private boolean alertFalseIdentification;
     private boolean alertNotFoundIdentification;
 
+
     public LoginState(GameStateController gsc) {
         this.gsc = gsc;
     }
@@ -49,6 +51,7 @@ public class LoginState extends GameState {
         il = new ImageLoader();
         background = il.getImage("/FantasyWorld2.jpg");
         sign = il.getImage("/signNoArrow.png");
+        logo = il.getImage("/logo.png");
 
         Arrays.sort(alphanumerics);
 
@@ -69,19 +72,7 @@ public class LoginState extends GameState {
         g.clearRect(0,0, UI.WIDTH, UI.HEIGHT);
         g.drawImage(background, 0, 0, UI.WIDTH, UI.HEIGHT, null);
 
-        g.setColor(UI.mainColor);
-        g.setFont(UI.titleFont);
-        int start = StringCenter.center(UI.TITLE, g);
-        g.drawString(UI.TITLE, start, UI.TITLEPOINT.y);
-        for (int i = 0; i < 4; i++) {
-            g.drawLine(start,UI.TITLEPOINT.y+10+i, (int) (g.getFontMetrics().getStringBounds(UI.TITLE,g).getWidth()+start),UI.TITLEPOINT.y+10+i);
-        }
-
-        // draw credits
-        g.setFont(new Font("Arial", Font.PLAIN, 21));
-        int csLength = (int)
-                g.getFontMetrics().getStringBounds("by Marcel Hollink", g).getWidth();
-        g.drawString("by Marcel Hollink", (start+csLength),UI.TITLEPOINT.y+35);
+        g.drawImage(logo,UI.WIDTH/2-300, 50,null);
 
         g.setFont(UI.font);
 

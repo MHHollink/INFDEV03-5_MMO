@@ -54,8 +54,7 @@ public class UI {
     public static final boolean LOCAL = true;
 
     // VALUES FOR THE JFrame AND JPanel
-    public static final String TITLE = "HRORPG";
-    public static final Point TITLEPOINT = new Point(100,100) ;
+    public static final String TITLE = "EQUILIBRIUM";
     public static int WIDTH = 1280;
     public static int HEIGHT = 720;
     public static double SCALE = 1.25;
