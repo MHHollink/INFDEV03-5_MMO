@@ -1,6 +1,6 @@
 package nl.marcelhollink.mmorpg.frontend.main.controller;
 
-import nl.marcelhollink.mmorpg.frontend.main.model.gamestates.ProfileManagerState;
+import nl.marcelhollink.mmorpg.frontend.main.view.gamestates.ProfileManagerState;
 import nl.marcelhollink.mmorpg.frontend.main.view.gamestates.*;
 
 import java.awt.*;

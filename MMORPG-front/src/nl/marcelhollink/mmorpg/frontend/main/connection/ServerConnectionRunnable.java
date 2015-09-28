@@ -66,6 +66,9 @@ public class ServerConnectionRunnable implements Runnable{
                         Logger.log(Logger.level.DEBUG, "Recieved ["+data+"]");
                         UI.getFrame().getPanel().getGsc().setState(GameStateController.SERVERDISCONNECTEDSTATE);
                     }
+                    if(data.contains("/createCharacter")){
+                        Logger.log(Logger.level.DEBUG, "Recieved ["+data+"]");
+                    }
                 }
             }
             output.close();

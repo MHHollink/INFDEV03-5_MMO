@@ -15,13 +15,13 @@ public class ServerContainsCharacter implements Serializable {
     @Id
     @ManyToOne(targetEntity = Server.class)
     @Cascade(CascadeType.ALL)
-    @JoinColumn(name = "address", nullable = false)
+    @JoinColumn(name = "server_address", nullable = false)
     private Server address;
 
     @Id
     @OneToOne(targetEntity = Character.class)
     @Cascade(CascadeType.ALL)
-    @JoinColumn(name = "name", nullable = false, unique = true)
+    @JoinColumn(name = "character_name", nullable = false, unique = true)
     private Character character;
 
     public Server getAddress() {

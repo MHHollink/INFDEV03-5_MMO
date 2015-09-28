@@ -1,5 +1,7 @@
 package nl.marcelhollink.mmorpg.frontend.main.model;
 
+import java.util.ArrayList;
+
 public class Player {
 
     String username;
@@ -13,7 +15,7 @@ public class Player {
 
     String iban;
 
-    String password = null;
+    private ArrayList<Character> characters;
 
     public Player(String username, String firstName, String lastName, double balance, String lastPayment, int monthsPayedFor, int characterSlots, String iban) {
         this.username = username;
@@ -24,6 +26,8 @@ public class Player {
         this.monthsPayedFor = monthsPayedFor;;
         this.characterSlots = characterSlots;
         this.iban = iban;
+
+        characters = new ArrayList<Character>();
     }
 
     public String getUsername() {
@@ -90,7 +94,11 @@ public class Player {
         this.iban = iban;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public ArrayList<Character> getCharacters() {
+        return characters;
+    }
+
+    public void addCharacters(Character character) {
+        characters.add(character);
     }
 }

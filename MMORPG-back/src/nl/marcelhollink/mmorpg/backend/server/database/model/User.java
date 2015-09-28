@@ -29,7 +29,7 @@ public class User implements Serializable{
     @Column(name = "last_payment")
     private String lastPayment;
 
-    @Column(name = "payed_until")
+    @Column(name = "days_left")
     private int daysLeft;
 
     @Column(name = "iban", unique = true)
@@ -38,6 +38,20 @@ public class User implements Serializable{
     @Column(name = "password", nullable = false)
     private String password;
 
+    public User(String username, String fName, String lName, int slots, double balance, String lastPayment, int daysLeft, String iban, String password) {
+        this.username = username;
+        this.fName = fName;
+        this.lName = lName;
+        this.slots = slots;
+        this.balance = balance;
+        this.lastPayment = lastPayment;
+        this.daysLeft = daysLeft;
+        this.iban = iban;
+        this.password = password;
+    }
+
+    public User() {
+    }
 
     public String getUsername() {
         return username;

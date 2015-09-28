@@ -29,6 +29,17 @@ public class Server  implements Serializable {
     @Column(name = "active", nullable = false)
     private boolean active;
 
+    public Server(String address, String serverName, String location, int maximumUsers, int connectedUsers, boolean active) {
+        this.address = address;
+        this.serverName = serverName;
+        this.location = location;
+        this.maximumUsers = maximumUsers;
+        this.connectedUsers = connectedUsers;
+        this.active = active;
+    }
+
+    public Server() {
+    }
 
     public String getAddress() {
         return address;

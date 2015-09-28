@@ -189,7 +189,7 @@ public class LoginState extends GameState {
 
     @Override
     public void receive(String data) {
-        if(data.contains("/loginSccs")){
+        if(data.contains("/loginSuccessful")){
             Logger.log(Logger.level.INFO, "User has logged in with " + username);
             ProfileState.user.setUsername(username);
             alertFalseIdentification = false;

@@ -1,6 +1,7 @@
 package nl.marcelhollink.mmorpg.backend.server;
 
-import nl.marcelhollink.mmorpg.backend.server.database.model.User;
+import nl.marcelhollink.mmorpg.backend.server.database.model.*;
+import nl.marcelhollink.mmorpg.backend.server.database.model.Character;
 import org.hibernate.Session;
 
 import java.io.IOException;
@@ -174,9 +175,54 @@ public class MMOClient implements Runnable{
         Session session = server.sf.openSession();
         session.beginTransaction();
 
-        // TODO : REGISTER CHARACTER
+        if(session.get(nl.marcelhollink.mmorpg.backend.server.database.model.Character.class, args[2])!=null){
+            Logger.log(Logger.level.WARN, "tried to save over an existing character!");
+            response += "/createCharacter error alreadyExists";
+        } else {
+            if(session.get(User.class, args[1])!=null){
+                Logger.log(Logger.level.INFO, "saving character");
+                User user = session.get(User.class, args[1]);
 
-        session.close();
+                Character character = new Character();
+
+                character.setCharacterName(args[2]);
+                character.setGender(args[3]);
+                character.setBalance(150);
+
+                session.save(character);
+
+                Logger.log(Logger.level.INFO, "creating user --|< charracter relationship");
+                UserOwnsCharacter uoc = new UserOwnsCharacter();
+
+                uoc.setUsername(user);
+                uoc.setCharacter(character);
+
+                session.save(uoc);
+
+                Logger.log(Logger.level.INFO, "creating character_skills entry in database");
+                CharacterSkills cs = new CharacterSkills(
+                        character,
+                        7, // total of all levels
+                        3, // total of combat levels (attack, defence, strength
+                        4, // total of all skill levels (others...)
+                        1,
+                        1,
+                        1,
+                        1,
+                        1,
+                        1,
+                        1,
+                        1
+                );
+                session.save(cs);
+
+                session.getTransaction().commit();
+                response += "/createCharacter successful";
+            } else {
+                Logger.log(Logger.level.ERROR, 404, "username not found");
+            }
+        }
+        session.close();;
         return response;
     }
 
@@ -191,7 +237,7 @@ public class MMOClient implements Runnable{
         if(session.get(User.class, args[1])!=null){
             User user = session.get(User.class, args[1]);
             if (user.getPassword().equals(args[2])){
-                response = "/loginSccs";
+                response = "/loginSuccessful";
                 Logger.log(Logger.level.INFO, clientPrefix + " logged in as " + args[1]);
                 Logger.log(Logger.level.INFO, clientPrefix + " is now known as " + args[1]);
                 clientPrefix = args[1];
@@ -255,14 +301,13 @@ public class MMOClient implements Runnable{
     }
 
     private String paymentSuccess(User user, double balance, double payed, int days, Session session){
-        user.setBalance(balance-payed);
-        user.setDaysLeft(user.getDaysLeft()+days);
+        user.setBalance(balance - payed);
+        user.setDaysLeft(user.getDaysLeft() + days);
         session.update(user);
         session.getTransaction().commit();
         session.close();
         Logger.log(Logger.level.INFO, clientPrefix + " bought a " + days + "days subscription");
-        Logger.log(Logger.level.TRACE," HURRAY, WE GOT MONEY!");
-        return "/buyMonthSucces "+days;
+        return "/buyMonthSuccessful "+days;
     }
 
     public void disconnect(){

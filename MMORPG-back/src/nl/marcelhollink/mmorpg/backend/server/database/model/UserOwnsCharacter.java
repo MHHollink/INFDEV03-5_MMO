@@ -15,13 +15,13 @@ public class UserOwnsCharacter implements Serializable
     @Id
     @Cascade(CascadeType.ALL)
     @ManyToOne(targetEntity = User.class)
-    @JoinColumn(name = "username", nullable = false)
+    @JoinColumn(name = "user_username", nullable = false)
     private User username;
 
     @Id
     @OneToOne(targetEntity = Character.class)
     @Cascade(org.hibernate.annotations.CascadeType.ALL)
-    @JoinColumn(name = "charname", nullable = false, unique = true)
+    @JoinColumn(name = "character_name", nullable = false, unique = true)
     private Character character;
 
     public User getUsername() {

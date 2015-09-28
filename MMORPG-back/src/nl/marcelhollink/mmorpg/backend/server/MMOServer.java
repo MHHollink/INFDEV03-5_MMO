@@ -35,8 +35,6 @@ public class MMOServer {
     public MMOServer() {
         this.commandLineScanner = new Scanner(System.in);
 
-
-
         this.conf = new Configuration();
         conf.configure();
         StandardServiceRegistry ssr = new StandardServiceRegistryBuilder().applySettings(conf.getProperties()).build();
@@ -47,6 +45,7 @@ public class MMOServer {
                 .addAnnotatedClass(ServerContainsCharacter.class)
                 .addAnnotatedClass(User.class)
                 .addAnnotatedClass(UserOwnsCharacter.class)
+                .addAnnotatedClass(CharacterSkills.class)
                 .buildSessionFactory(ssr);
 
         new Thread(new Runnable() {
@@ -99,13 +98,20 @@ public class MMOServer {
     }
 
     public void setServerActiveState(String serverIp, boolean state) {
-        Logger.log(Logger.level.INFO, "Trying to set server activeState to "+state);
+        Logger.log(Logger.level.INFO, "Trying to set server activeState to " + state);
         Session session = sf.openSession();
         session.beginTransaction();
 
-        Server openingServer = session.get(Server.class, serverIp);
-        openingServer.setActive(state);
-        session.save(openingServer);
+        Server server = session.get(Server.class, serverIp);
+        if(server == null) {
+            Logger.log(Logger.level.WARN,"Server did not exist, creating one...");
+            Logger.log(Logger.level.WARN,"Please make sure to configure the server in the database!");
+            server = new Server(serverIp, "", "", 0, 0, state);
+
+        }
+
+        server.setActive(state);
+        session.save(server);
         session.getTransaction().commit();
         session.close();
         Logger.log(Logger.level.DEBUG, "Server activeState is now "+state);
