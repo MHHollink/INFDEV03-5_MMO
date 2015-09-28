@@ -266,6 +266,7 @@ public class MMOClient implements Runnable{
     }
 
     public void disconnect(){
+        output.println("/serverDisconnected");
         active = false;
     }
 

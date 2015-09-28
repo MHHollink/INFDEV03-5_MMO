@@ -38,7 +38,7 @@ public class MenuState extends GameState {
     private BufferedImage sign;
 
     private static boolean splashing = true;
-    private BufferedImage splash;
+    private BufferedImage logo;
 
     private boolean timedOut = false;
 
@@ -65,7 +65,7 @@ public class MenuState extends GameState {
     @Override
     public void init() {
         Logger.log(Logger.level.INFO, "MainState was initiated");
-        splash = il.getImage("/splash.jpg");
+        logo = il.getImage("/logo.png");
     }
 
     @Override
@@ -78,24 +78,11 @@ public class MenuState extends GameState {
             g.clearRect(0, 0, UI.WIDTH, UI.HEIGHT);
             g.drawImage(filler, 0, 0, UI.WIDTH, UI.HEIGHT, null);
 
-            // draw title
-            g.setColor(UI.mainColor);
-            g.setFont(UI.titleFont);
-            int start = StringCenter.center(UI.TITLE, g);
-            g.drawString(UI.TITLE, start, UI.TITLEPOINT.y);
-            for (int i = 0; i < 4; i++) {
-                g.drawLine(start, UI.TITLEPOINT.y + 10 + i, (int) (g.getFontMetrics().getStringBounds(UI.TITLE, g).getWidth() + start), UI.TITLEPOINT.y + 10 + i);
-            }
+            g.drawImage(logo,UI.WIDTH/2-300, 50,null);
 
             g.drawImage(sign, (UI.WIDTH / 2) - 140, 190, 300, 200, null);
             g.drawImage(sign, (UI.WIDTH / 2) - 140, 240, 300, 200, null);
             g.drawImage(sign, (UI.WIDTH / 2) + 140, 290, -300, 200, null);
-
-            // draw credits
-            g.setFont(new Font("Arial", Font.PLAIN, 21));
-            int csLength = (int)
-                    g.getFontMetrics().getStringBounds("by Marcel Hollink", g).getWidth();
-            g.drawString("by Marcel Hollink", (start + csLength), UI.TITLEPOINT.y + 35);
 
             g.setFont(UI.font);
 
@@ -131,7 +118,7 @@ public class MenuState extends GameState {
             } else {
                 //draw Background
                 g.clearRect(0, 0, UI.WIDTH, UI.HEIGHT);
-                g.drawImage(splash, 0, 0, null);
+                g.drawImage(logo, UI.WIDTH/2-300, UI.HEIGHT/2-200, null);
             }
         }
     }
@@ -196,8 +183,6 @@ public class MenuState extends GameState {
     public void receive(String s) {
 
     }
-
-
 
     public static void stopSplash(){
         splashing = false;

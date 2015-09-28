@@ -24,11 +24,13 @@ public class GameFrame extends JFrame {
             @Override
             public void windowClosing(WindowEvent e) {
                 try {
-                    UI.clientSocket.send("/disconnectMeFromMMORPGServer");
-                    UI.clientSocket.getServer().close();
+
+                        UI.clientSocket.send("/disconnectMeFromMMORPGServer");
+                        UI.clientSocket.getServer().close();
+
                 } catch (IOException exception) {
                     exception.printStackTrace();
-                }
+                } catch (NullPointerException ignore){ }
                 System.exit(0);
             }
 

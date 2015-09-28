@@ -62,6 +62,10 @@ public class ServerConnectionRunnable implements Runnable{
                         Logger.log(Logger.level.DEBUG, "Recieved ["+data+"]");
                         UI.getFrame().getPanel().getGsc().getGameStates().get(GameStateController.PROFILESTATE).receive(data);
                     }
+                    if(data.contains("/serverDisconnected")) {
+                        Logger.log(Logger.level.DEBUG, "Recieved ["+data+"]");
+                        UI.getFrame().getPanel().getGsc().setState(GameStateController.SERVERDISCONNECTEDSTATE);
+                    }
                 }
             }
             output.close();

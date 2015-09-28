@@ -1,6 +1,7 @@
 package nl.marcelhollink.mmorpg.frontend.main.view;
 
 import nl.marcelhollink.mmorpg.frontend.main.UI;
+import nl.marcelhollink.mmorpg.frontend.main.connection.ClientSocket;
 import nl.marcelhollink.mmorpg.frontend.main.controller.GameStateController;
 
 import javax.swing.*;
@@ -55,6 +56,7 @@ public class GamePanel extends JPanel  implements Runnable, KeyListener {
         running = true;
 
         gsc = new GameStateController();
+        UI.clientSocket = new ClientSocket(UI.getServerIP(), UI.getServerPort());
     }
 
     public void run() {

@@ -3,7 +3,6 @@ package nl.marcelhollink.mmorpg.frontend.main.controller;
 import nl.marcelhollink.mmorpg.frontend.main.view.gamestates.*;
 
 import java.awt.*;
-import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
 /**
@@ -17,12 +16,14 @@ public class GameStateController {
     private int currentState;
 
     public static final int
-            MENUSTATE = 1,
-            LOGINSTATE = 2,
-            REGISTERSTATE = 3,
-            PROFILESTATE = 4,
-            AVATARMANAGER = 5,
-            SHOPPINGSTATE = 6;
+            SERVERDISCONNECTEDSTATE = 0,
+            SERVEROFFLINESTATE = 1,
+            MENUSTATE = 2,
+            LOGINSTATE = 3,
+            REGISTERSTATE = 4,
+            PROFILESTATE = 5,
+            AVATARMANAGER = 6,
+            SHOPPINGSTATE = 7;
 
     /**
      * Constructs the GSC, Initiate the GameStates-ArrayList and puts all states in it.
@@ -31,7 +32,8 @@ public class GameStateController {
     public GameStateController() {
         gameStates = new ArrayList<GameState>();
 
-        gameStates.add(null);
+        gameStates.add(new ServerDisconnectedState(this));
+        gameStates.add(new ServerOfflineState(this));
         gameStates.add(new MenuState(this));
         gameStates.add(new LoginState(this));
         gameStates.add(new RegisterState(this));

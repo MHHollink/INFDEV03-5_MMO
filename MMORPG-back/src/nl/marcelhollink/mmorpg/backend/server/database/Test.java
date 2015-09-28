@@ -11,9 +11,6 @@ import org.hibernate.cfg.Configuration;
 
 import java.util.logging.Level;
 
-/**
- * Created by Marcel on 26-9-2015.
- */
 public class Test {
 
     private SessionFactory sf;
@@ -38,10 +35,14 @@ public class Test {
                 .addAnnotatedClass(UserOwnsCharacter.class)
                 .buildSessionFactory(ssr);
 
-        registerUser(new String[]{"null", "Evestar01", "Marcel", "Hollink", "NL01INGB123412", "test"});
-        registerChar(new String[]{"null", "Mjollnir1994", "Qulan", "Male"});
-        registerChar(new String[]{"null", "Mjollnir1994", "Eve1994", "Female"});
-        registerChar(new String[]{"null", "Evestar01", "Evestar01", "Female"});
+        setServerActiveState("92.108.159.52:25565",true);
+//        registerUser(new String[]{"null", "Evestar01", "Marcel", "Hollink", "NL01INGB123412", "test"});
+//        registerChar(new String[]{"null", "Mjollnir1994", "Qulan", "Male"});
+//        registerChar(new String[]{"null", "Mjollnir1994", "Eve1994", "Female"});
+//        registerChar(new String[]{"null", "Evestar01", "Evestar01", "Female"});
+
+
+        sf.close();
     }
 
     private void registerChar(String[] args) {
@@ -109,5 +110,18 @@ public class Test {
         }
 
         session.close();
+    }
+
+    public void setServerActiveState(String serverIp, boolean state) {
+        Logger.log(Logger.level.INFO, "Setting server active state to "+state);
+        Session session = sf.openSession();
+        session.beginTransaction();
+
+        Server openingServer = session.get(Server.class, serverIp);
+        openingServer.setActive(state);
+        session.save(openingServer);
+        session.getTransaction().commit();
+        session.close();
+        Logger.log(Logger.level.DEBUG, "Server activeState is now "+state);
     }
 }

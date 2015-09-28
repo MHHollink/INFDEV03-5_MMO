@@ -80,8 +80,6 @@ public class UI {
     private static GameFrame frame;
 
     public static void main(String[] args) {
-        clientSocket = new ClientSocket(serverIP, serverPort);
-
         WIDTH = (int) (WIDTH/SCALE);  // SCALE WINDOW LITTLE BIT DOWN IN WIDTH
         HEIGHT= (int) (HEIGHT/SCALE); // SCALE WINDOW LITTLE BIT DOWN IN HEIGHT
 

@@ -1,6 +1,7 @@
 package nl.marcelhollink.mmorpg.frontend.main.connection;
 
 import nl.marcelhollink.mmorpg.frontend.main.UI;
+import nl.marcelhollink.mmorpg.frontend.main.controller.GameStateController;
 import nl.marcelhollink.mmorpg.frontend.main.utils.Logger;
 
 import java.io.IOException;
@@ -35,9 +36,8 @@ public class ClientSocket {
             new Thread(runnable).start();
         }
         catch (IOException e) {
-            e.printStackTrace();
-            Logger.log(Logger.level.ERROR, "Server connection time out");
-            System.exit(-1);
+            Logger.log(Logger.level.ERROR, "Server connection time out [" + e.getMessage() +"]");
+            UI.getFrame().getPanel().getGsc().setState(GameStateController.SERVEROFFLINESTATE);
         }
     }
 

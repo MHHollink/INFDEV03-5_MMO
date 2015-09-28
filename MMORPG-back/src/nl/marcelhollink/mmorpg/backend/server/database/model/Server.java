@@ -17,13 +17,13 @@ public class Server  implements Serializable {
     @Column(name = "name", nullable = false, unique = true)
     private String serverName;
 
-    @Column(name = "local", nullable = false)
+    @Column(name = "location", nullable = false)
     private String location;
 
     @Column(name = "max_users", nullable = false)
     private int maximumUsers;
 
-    @Column(name = "connected", nullable = false)
+    @Column(name = "current_users", nullable = false)
     private int connectedUsers;
 
     @Column(name = "active", nullable = false)
