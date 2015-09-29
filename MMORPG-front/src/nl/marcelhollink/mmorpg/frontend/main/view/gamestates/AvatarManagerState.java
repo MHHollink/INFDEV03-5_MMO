@@ -8,6 +8,8 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 
 public class AvatarManagerState extends GameState{
+
+
     public AvatarManagerState(GameStateController gsc) {
         this.gsc = gsc;
     }

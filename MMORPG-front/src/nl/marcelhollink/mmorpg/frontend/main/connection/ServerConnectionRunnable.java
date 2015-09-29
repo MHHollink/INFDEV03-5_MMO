@@ -3,6 +3,7 @@ package nl.marcelhollink.mmorpg.frontend.main.connection;
 import nl.marcelhollink.mmorpg.frontend.main.UI;
 import nl.marcelhollink.mmorpg.frontend.main.controller.GameStateController;
 import nl.marcelhollink.mmorpg.frontend.main.utils.Logger;
+import nl.marcelhollink.mmorpg.frontend.main.view.gamestates.GameState;
 import nl.marcelhollink.mmorpg.frontend.main.view.gamestates.MenuState;
 
 import java.io.IOException;
@@ -67,7 +68,11 @@ public class ServerConnectionRunnable implements Runnable{
                         UI.getFrame().getPanel().getGsc().setState(GameStateController.SERVERDISCONNECTEDSTATE);
                     }
                     if(data.contains("/createCharacter")){
+                        Logger.log(Logger.level.DEBUG, "Recieved [" + data + "]");
+                    }
+                    if(data.contains("characterDetails")){
                         Logger.log(Logger.level.DEBUG, "Recieved ["+data+"]");
+                        UI.getFrame().getPanel().getGsc().getGameStates().get(GameStateController.PROFILEMANAGERSTATE).receive(data);
                     }
                 }
             }

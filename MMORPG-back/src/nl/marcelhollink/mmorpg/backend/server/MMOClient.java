@@ -2,11 +2,14 @@ package nl.marcelhollink.mmorpg.backend.server;
 
 import nl.marcelhollink.mmorpg.backend.server.database.model.*;
 import nl.marcelhollink.mmorpg.backend.server.database.model.Character;
+import org.hibernate.Query;
 import org.hibernate.Session;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 @SuppressWarnings({"UnnecessaryLocalVariable", "FieldCanBeLocal"})
@@ -74,6 +77,10 @@ public class MMOClient implements Runnable{
                             output.println(requestUserDetail(args));
                             Logger.log(Logger.level.INFO,clientPrefix+" received user details");
                         }
+                        if(args[1].equals("charactersFor")) {
+                            requestCharacterDetails(args);
+                            Logger.log(Logger.level.INFO,clientPrefix+" received character details");
+                        }
                     }
                     if(data.contains("/UserCheatCodePlusTwentyBalanceInsert")){
                         Logger.log(Logger.level.WARN,clientPrefix+" has cheated!");
@@ -87,9 +94,44 @@ public class MMOClient implements Runnable{
         }catch (Exception e){
             active = false;
             Logger.log(Logger.level.ERROR,clientPrefix +" had en error!");
+            e.printStackTrace();
         }
         Logger.log(Logger.level.INFO,clientPrefix +" has disconnected");
         server.clients.remove(this);
+    }
+
+    private void requestCharacterDetails(String[] args) {
+        Logger.log(Logger.level.INFO, clientPrefix + " requested user details for user [" + args[2] + "]");
+
+        Session session = server.sf.openSession();
+        session.beginTransaction();
+
+        Query query = session.createQuery("from UserOwnsCharacter where user_username = :username");
+        query.setParameter("username", clientPrefix);
+
+        ArrayList<UserOwnsCharacter> userOwnsCharacters = (ArrayList<UserOwnsCharacter>) query.list();
+        for (UserOwnsCharacter uoc : userOwnsCharacters) {
+            Character character = session.get(Character.class, uoc.getCharacter().getCharacterName());
+            CharacterSkills skills = session.get(CharacterSkills.class, character.getCharacterName());
+
+            String response = "/characterDetails ";
+
+            response = response.concat(character.getCharacterName()+" ");
+            response = response.concat(character.getGender()+" ");
+            response = response.concat(character.getBalance()+" ");
+
+            response = response.concat(skills.getAttack()+" ");
+            response = response.concat(skills.getDefence()+" ");
+            response = response.concat(skills.getStrength()+" ");
+            response = response.concat(skills.getHitpoints()+" ");
+            response = response.concat(skills.getMining()+" ");
+            response = response.concat(skills.getWoodcutting()+" ");
+            response = response.concat(skills.getSmithing()+" ");
+            response = response.concat(skills.getBartering()+" ");
+
+            output.println(response);
+            Logger.log(Logger.level.DEBUG,"Send to "+clientPrefix+" : "+response);
+        }
     }
 
     private String updateBalance(String[] args) {
@@ -222,7 +264,7 @@ public class MMOClient implements Runnable{
                 Logger.log(Logger.level.ERROR, 404, "username not found");
             }
         }
-        session.close();;
+        session.close();
         return response;
     }
 

@@ -22,7 +22,7 @@ public class Character implements Serializable{
     @Column(name = "balance", nullable = false)
     private int balance;
 
-    public Character(String characterName, String gender, int combat_level, int skill_level, int balance) {
+    public Character(String characterName, String gender, int balance) {
         this.characterName = characterName;
         this.gender = gender;
         this.balance = balance;

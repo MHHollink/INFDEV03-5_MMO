@@ -8,12 +8,14 @@ import nl.marcelhollink.mmorpg.frontend.main.view.gamestates.GameState;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
 
 /**
  * This Class was created by marcel on 28-9-2015
  * Time of creation : 16:42
  */
 public class ProfileManagerState extends GameState {
+
     public ProfileManagerState(GameStateController gsc) {
         this.gsc = gsc;
 

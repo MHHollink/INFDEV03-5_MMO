@@ -101,4 +101,19 @@ public class Player {
     public void addCharacters(Character character) {
         characters.add(character);
     }
+
+    @Override
+    public String toString() {
+        return "Player{" +
+                "characters=" + characters +
+                ", iban='" + iban + '\'' +
+                ", characterSlots=" + characterSlots +
+                ", monthsPayedFor=" + monthsPayedFor +
+                ", lastPayment='" + lastPayment + '\'' +
+                ", balance=" + balance +
+                ", lastName='" + lastName + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", username='" + username + '\'' +
+                '}';
+    }
 }

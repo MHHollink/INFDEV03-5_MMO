@@ -35,6 +35,11 @@ public class Character {
         this.woodcutting = woodcutting;
         this.smithing = smithing;
         this.bartering = bartering;
+
+        this.combatLevel = attack+defence+strength;
+        this.skillLevel = mining+woodcutting+smithing+bartering;
+
+        this.totalLevel = combatLevel + skillLevel;
     }
 
     public String getCharacterName() {
@@ -147,5 +152,25 @@ public class Character {
 
     public void setBartering(int bartering) {
         this.bartering = bartering;
+    }
+
+    @Override
+    public String toString() {
+        return "Character{" +
+                "characterName='" + characterName + '\'' +
+                ", gender='" + gender + '\'' +
+                ", balance=" + balance +
+                ", totalLevel=" + totalLevel +
+                ", combatLevel=" + combatLevel +
+                ", skillLevel=" + skillLevel +
+                ", attack=" + attack +
+                ", defence=" + defence +
+                ", strength=" + strength +
+                ", hitpoints=" + hitpoints +
+                ", mining=" + mining +
+                ", woodcutting=" + woodcutting +
+                ", smithing=" + smithing +
+                ", bartering=" + bartering +
+                '}';
     }
 }

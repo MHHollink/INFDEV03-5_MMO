@@ -65,6 +65,8 @@ public class CharacterSkills implements Serializable {
         this.bartering = bartering;
     }
 
+    public CharacterSkills(){}
+
     public Character getCharacter() {
         return character;
     }
@@ -159,5 +161,45 @@ public class CharacterSkills implements Serializable {
 
     public void setBartering(int bartering) {
         this.bartering = bartering;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof CharacterSkills)) return false;
+
+        CharacterSkills that = (CharacterSkills) o;
+
+        if (attack != that.attack) return false;
+        if (bartering != that.bartering) return false;
+        if (combatLevel != that.combatLevel) return false;
+        if (defence != that.defence) return false;
+        if (hitpoints != that.hitpoints) return false;
+        if (mining != that.mining) return false;
+        if (skillLevel != that.skillLevel) return false;
+        if (smithing != that.smithing) return false;
+        if (strength != that.strength) return false;
+        if (totalLevel != that.totalLevel) return false;
+        if (woodcutting != that.woodcutting) return false;
+        if (!character.equals(that.character)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = character.hashCode();
+        result = 31 * result + totalLevel;
+        result = 31 * result + combatLevel;
+        result = 31 * result + skillLevel;
+        result = 31 * result + attack;
+        result = 31 * result + defence;
+        result = 31 * result + strength;
+        result = 31 * result + hitpoints;
+        result = 31 * result + mining;
+        result = 31 * result + woodcutting;
+        result = 31 * result + smithing;
+        result = 31 * result + bartering;
+        return result;
     }
 }

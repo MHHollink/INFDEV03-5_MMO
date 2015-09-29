@@ -3,7 +3,8 @@ package nl.marcelhollink.mmorpg.frontend.main.view.gamestates;
 import nl.marcelhollink.mmorpg.frontend.main.UI;
 import nl.marcelhollink.mmorpg.frontend.main.controller.GameStateController;
 import nl.marcelhollink.mmorpg.frontend.main.graphics.ImageLoader;
-import nl.marcelhollink.mmorpg.frontend.main.model.Player;
+import nl.marcelhollink.mmorpg.frontend.main.model.*;
+import nl.marcelhollink.mmorpg.frontend.main.model.Character;
 import nl.marcelhollink.mmorpg.frontend.main.utils.Logger;
 import nl.marcelhollink.mmorpg.frontend.main.view.StringCenter;
 
@@ -37,7 +38,7 @@ public class ProfileState extends GameState {
     @Override
     public void init() {
         UI.clientSocket.send("/request userDetails "+user.getUsername());
-        UI.clientSocket.send("/request charactersFor"+user.getUsername());
+        UI.clientSocket.send("/request charactersFor "+user.getUsername());
     }
 
     @Override
@@ -57,7 +58,7 @@ public class ProfileState extends GameState {
 
         // HORIZONTAL LINE SEPARATOR
         g.fillRect(0, 80, UI.WIDTH, 3);
-        g.fillRect(0, UI.HEIGHT-80, UI.WIDTH, 3);
+        g.fillRect(0, UI.HEIGHT - 80, UI.WIDTH, 3);
 
         g.setColor(new Color(135, 181, 184, 220));
         if (left && !bottom && !top) g.fillRect(0, 81, UI.WIDTH / 2, UI.HEIGHT - 159);
@@ -85,7 +86,7 @@ public class ProfileState extends GameState {
                     460
             );
 
-            g.drawString("Charracters", UI.WIDTH/4 + StringCenter.center("Charracters",g), UI.HEIGHT/2);
+            g.drawString("Characters", UI.WIDTH/4 + StringCenter.center("Characters",g), UI.HEIGHT/2);
         }
         if (right && !bottom && !top) { // IF RIGHT
 
@@ -172,7 +173,7 @@ public class ProfileState extends GameState {
     @Override
     public void receive(String data) {
         if (data.contains("/userDetails")) {
-            Logger.log(Logger.level.INFO, "data received");
+            Logger.log(Logger.level.INFO, "user data received");
             String[] args = data.split(" ");
             user = new Player(
                     args[1],
@@ -184,6 +185,29 @@ public class ProfileState extends GameState {
                     Integer.parseInt(args[7]),
                     args[8]
             );
+        }
+        if(data.contains("/characterDetails")){
+            Logger.log(Logger.level.INFO, "character data received");
+            String[] args = data.split(" ");
+            Character character = new Character(
+                    args[1],
+                    args[2],
+                    Integer.parseInt(args[3])
+            );
+
+            character.setAllLevels(
+                    Integer.parseInt(args[4]),
+                    Integer.parseInt(args[5]),
+                    Integer.parseInt(args[6]),
+                    Integer.parseInt(args[7]),
+                    Integer.parseInt(args[8]),
+                    Integer.parseInt(args[9]),
+                    Integer.parseInt(args[10]),
+                    Integer.parseInt(args[11])
+                );
+
+            Logger.log(Logger.level.DEBUG, character.toString());
+            ProfileState.user.addCharacters(character);
         }
 
     }
