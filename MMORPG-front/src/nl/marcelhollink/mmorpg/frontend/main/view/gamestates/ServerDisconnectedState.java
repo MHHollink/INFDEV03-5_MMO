@@ -29,6 +29,7 @@ public class ServerDisconnectedState extends GameState {
 
     @Override
     public void init() {
+        Logger.log(Logger.level.INFO, getClass().getSimpleName() +" was initiated");
         this.il = new ImageLoader();
 
         filler = il.getImage("/FantasyWorld.jpg");
@@ -37,7 +38,7 @@ public class ServerDisconnectedState extends GameState {
     }
 
     @Override
-    public void update() {
+    public void updateLogic() {
 
     }
 
@@ -49,8 +50,8 @@ public class ServerDisconnectedState extends GameState {
 
         g.drawImage(sign,175,375,UI.WIDTH-350,100,null);
 
-        g.setFont(UI.font);
-        g.setColor(UI.mainColor);
+        g.setFont(UI.MAIN_FONT);
+        g.setColor(UI.MAIN_COLOR);
 
         g.drawString(s, StringCenter.center(s, g),UI.HEIGHT/4+UI.HEIGHT/2 -9);
         g.drawString(n, StringCenter.center(n,g),UI.HEIGHT/4+UI.HEIGHT/2 +9);
@@ -71,8 +72,4 @@ public class ServerDisconnectedState extends GameState {
 
     }
 
-    @Override
-    public void receive(String s) {
-
-    }
 }

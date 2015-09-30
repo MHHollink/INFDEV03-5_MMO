@@ -1,12 +1,15 @@
 package nl.marcelhollink.mmorpg.frontend.main.view.gamestates;
 
 import nl.marcelhollink.mmorpg.frontend.main.UI;
+import nl.marcelhollink.mmorpg.frontend.main.connection.ClientSocket;
+import nl.marcelhollink.mmorpg.frontend.main.connection.ServerConnectionRunnable;
 import nl.marcelhollink.mmorpg.frontend.main.controller.GameStateController;
 import nl.marcelhollink.mmorpg.frontend.main.utils.Logger;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
 
+// TODO :: IMPLEMENT CREATION OF CHARACTER IF FREESLOTS, SELECTING CHARACTER IF AVALIABLE, DELETING CHARACTER
 public class AvatarManagerState extends GameState{
 
 
@@ -16,11 +19,11 @@ public class AvatarManagerState extends GameState{
 
     @Override
     public void init() {
-        Logger.log(Logger.level.INFO, "AvatarManagerState was initiated");
+        Logger.log(Logger.level.INFO, getClass().getSimpleName() +"was initiated");
     }
 
     @Override
-    public void update() {
+    public void updateLogic() {
 
     }
 
@@ -36,7 +39,7 @@ public class AvatarManagerState extends GameState{
         }
 
         if (k == KeyEvent.VK_Y) {
-            UI.clientSocket.send("/regiChar "+ProfileState.user.getUsername()+" mjollnir male");
+            ClientSocket.getInstance().send("/registerMMOCharacter " + ProfileState.user.getUsername() + " odinson male");
 
         }
     }
@@ -45,10 +48,4 @@ public class AvatarManagerState extends GameState{
     public void keyReleased(int k) {
 
     }
-
-    @Override
-    public void receive(String s) {
-
-    }
-
 }

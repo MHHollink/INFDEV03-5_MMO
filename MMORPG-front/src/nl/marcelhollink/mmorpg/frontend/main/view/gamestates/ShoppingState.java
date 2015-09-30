@@ -1,7 +1,9 @@
 package nl.marcelhollink.mmorpg.frontend.main.view.gamestates;
 
 import nl.marcelhollink.mmorpg.frontend.main.UI;
+import nl.marcelhollink.mmorpg.frontend.main.connection.ServerConnectionRunnable;
 import nl.marcelhollink.mmorpg.frontend.main.controller.GameStateController;
+import nl.marcelhollink.mmorpg.frontend.main.observers.SocketObserver;
 import nl.marcelhollink.mmorpg.frontend.main.utils.Logger;
 
 import java.awt.*;
@@ -11,7 +13,7 @@ import java.awt.event.KeyEvent;
  * This Class was created by marcel on 24-9-2015
  * Time of creation : 13:05
  */
-public class ShoppingState extends GameState {
+public class ShoppingState extends GameState implements SocketObserver {
 
 
     public ShoppingState(GameStateController gsc) {
@@ -20,11 +22,13 @@ public class ShoppingState extends GameState {
 
     @Override
     public void init() {
-        Logger.log(Logger.level.INFO,"ShoppingState was initiated");
+        Logger.log(Logger.level.INFO, getClass().getSimpleName() +" was initiated");
+
+        ServerConnectionRunnable.getObserverSubject().register(this);
     }
 
     @Override
-    public void update() {
+    public void updateLogic() {
 
     }
 
@@ -37,6 +41,7 @@ public class ShoppingState extends GameState {
     public void keyPressed(int k) {
         if (k == KeyEvent.VK_ESCAPE) {
             gsc.setState(GameStateController.PROFILESTATE);
+            ServerConnectionRunnable.getObserverSubject().unregister(this);
         }
     }
 
@@ -46,8 +51,7 @@ public class ShoppingState extends GameState {
     }
 
     @Override
-    public void receive(String s) {
+    public void update(String s) {
 
     }
-
 }

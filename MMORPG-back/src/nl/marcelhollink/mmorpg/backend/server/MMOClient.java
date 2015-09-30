@@ -53,9 +53,9 @@ public class MMOClient implements Runnable{
                     String[] args = data.split(" ");
                     if(data.contains("/connect")){
                         Logger.log(Logger.level.INFO, clientPrefix + " connected...");
-                        output.println("/serverID Netherlands-NL01");
-                        output.println("/currentlyOnline currently online : "+server.clients.size());
-                        output.println("/exitSplash");
+                        output.println("/mainServerID Netherlands-NL01");
+                        output.println("/mainCurrentlyOnline "+server.clients.size());
+                        output.println("/mainExitSplash");
                     }
 
                     if(data.contains("/disconnectMeFromMMORPGServer")) {
@@ -63,10 +63,10 @@ public class MMOClient implements Runnable{
                         active = false;
                     }
 
-                    if(data.contains("/regiUser")){
+                    if(data.contains("/registerMMOUser")){
                         output.println(registerUser(args));
                     }
-                    if(data.contains("/regiChar")){
+                    if(data.contains("/registerMMOCharacter")){
                         output.println(registerCharacter(args));
                     }
                     if(data.contains("/attemptedLogin")){
@@ -82,9 +82,21 @@ public class MMOClient implements Runnable{
                             Logger.log(Logger.level.INFO,clientPrefix+" received character details");
                         }
                     }
+                    if(data.contains("/shop")){
+                        if(args[1].equals("days")){
+                            buyMoreDays(args);
+                        }
+                        if(args[1].equals("money")){
+                            updateBalance(args);
+                        }
+                        if(args[1].equals("characters")){
+                            buyMoreCharacterSlots(args);
+                        }
+
+                    }
                     if(data.contains("/UserCheatCodePlusTwentyBalanceInsert")){
                         Logger.log(Logger.level.WARN,clientPrefix+" has cheated!");
-                        updateBalance(new String[]{"0", "20"});
+                        updateBalance(new String[]{"/shop", "money", "20"});
                     }
                 }
 
@@ -96,8 +108,25 @@ public class MMOClient implements Runnable{
             Logger.log(Logger.level.ERROR,clientPrefix +" had en error!");
             e.printStackTrace();
         }
-        Logger.log(Logger.level.INFO,clientPrefix +" has disconnected");
+        Logger.log(Logger.level.INFO, clientPrefix + " has disconnected");
         server.clients.remove(this);
+    }
+
+    private void buyMoreCharacterSlots(String[] args){
+        Session session = server.sf.openSession();
+        session.beginTransaction();
+
+        User user = session.get(User.class, clientPrefix);
+        if(user.getBalance() > 6){
+            user.setSlots(user.getSlots()+1);
+            session.update(user);
+            session.getTransaction().commit();
+            output.println("/shopSuccessful");
+        } else {
+            output.println("/shopError notEnoughMoney");
+        }
+
+        session.close();
     }
 
     private void requestCharacterDetails(String[] args) {
@@ -130,7 +159,7 @@ public class MMOClient implements Runnable{
             response = response.concat(skills.getBartering()+" ");
 
             output.println(response);
-            Logger.log(Logger.level.DEBUG,"Send to "+clientPrefix+" : "+response);
+            Logger.log(Logger.level.DEBUG, "Send to " + clientPrefix + " : " + response);
         }
     }
 
@@ -141,13 +170,13 @@ public class MMOClient implements Runnable{
         session.beginTransaction();
 
         User user = session.get(User.class, clientPrefix);
-        user.setBalance(user.getBalance()+Double.parseDouble(args[1]));
+        user.setBalance(user.getBalance()+Double.parseDouble(args[2]));
 
         session.save(user);
         session.getTransaction().commit();
         session.close();
 
-        response = "updated user balance with "+args[1];
+        response = "updated user balance with "+args[2];
 
         return response;
     }
@@ -183,7 +212,7 @@ public class MMOClient implements Runnable{
         if(session.get(User.class, args[1])!=null){
            Logger.log(Logger.level.INFO,clientPrefix+" tried to save an existing user!");
 
-            response = "/registerR-or 'Username Already exists";
+            response = "/registerError 'Username Already exists";
         } else {
             Logger.log(Logger.level.INFO, clientPrefix + " started the creation of a user");
 
@@ -204,7 +233,7 @@ public class MMOClient implements Runnable{
             session.getTransaction().commit();
 
             Logger.log(Logger.level.INFO, clientPrefix + " saved a new user in the database");
-            response = "/registerSccs";
+            response = "/registerSuccessful";
         }
 
         session.close();
@@ -217,14 +246,18 @@ public class MMOClient implements Runnable{
         Session session = server.sf.openSession();
         session.beginTransaction();
 
-        if(session.get(nl.marcelhollink.mmorpg.backend.server.database.model.Character.class, args[2])!=null){
+        if(session.get(Character.class, args[2])!=null){
             Logger.log(Logger.level.WARN, clientPrefix + " tried to save over an existing character!");
             response += "/createCharacter error alreadyExists";
         } else {
             if(session.get(User.class, args[1])!=null){
-                Logger.log(Logger.level.INFO, clientPrefix + " saving character");
                 User user = session.get(User.class, args[1]);
 
+                if(user.getSlots() < 1) {
+                    return "/createCharacter error noSlotsAvailable";
+                }
+
+                Logger.log(Logger.level.INFO, clientPrefix + " saving character");
                 Character character = new Character();
 
                 character.setCharacterName(args[2]);
@@ -257,6 +290,10 @@ public class MMOClient implements Runnable{
                         1
                 );
                 session.save(cs);
+
+                Logger.log(Logger.level.INFO, "removing one free characterSlot from the users");
+                user.setSlots(user.getSlots() - 1);
+                session.update(user);
 
                 session.getTransaction().commit();
                 response += "/createCharacter successful";
@@ -314,32 +351,32 @@ public class MMOClient implements Runnable{
                     // payment successful
                     return paymentSuccess(user, balance, 5.0, 31, session);
                 }
-                return "/buyMonthError NoMoney "+(balance-5);
+                return "/shopError notEnoughMoney "+(balance-5);
             case 2:
                 // Two more months
                 if ( balance - 8 > 0) {
                     // payment successful
                     return paymentSuccess(user, balance, 8.0, 61, session);
                 }
-                return "/buyMonthError NoMoney "+(balance-8);
+                return "/shopError notEnoughMoney "+(balance-8);
             case 3:
                 // Three more months
                 if ( balance - 10 > 0) {
                     // payment successful
                     return paymentSuccess(user, balance, 10.0, 92, session);
                 }
-                return "/buyMonthError NoMoney "+(balance-10);
+                return "/shopError notEnoughMoney "+(balance-10);
             case 12:
                 // One whole year
                 if ( balance - 35 > 0) {
                     // payment successful
                     return paymentSuccess(user,balance,35.0,365,session);
                 }
-                return "/buyMonthError NoMoney "+(balance-35);
+                return "/shopError notEnoughMoney "+(balance-35);
         }
 
         // This should never happen!!
-        return "/buyMonthError 'not the right amounts of months was entered'";
+        return "/shopError 'not the right amounts of months was entered'";
     }
 
     private String paymentSuccess(User user, double balance, double payed, int days, Session session){

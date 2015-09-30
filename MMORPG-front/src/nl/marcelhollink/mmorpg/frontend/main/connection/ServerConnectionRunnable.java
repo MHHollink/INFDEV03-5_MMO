@@ -1,79 +1,61 @@
 package nl.marcelhollink.mmorpg.frontend.main.connection;
 
+import nl.marcelhollink.mmorpg.frontend.main.observers.SocketObserver;
+import nl.marcelhollink.mmorpg.frontend.main.observers.SocketSubject;
 import nl.marcelhollink.mmorpg.frontend.main.UI;
 import nl.marcelhollink.mmorpg.frontend.main.controller.GameStateController;
 import nl.marcelhollink.mmorpg.frontend.main.utils.Logger;
-import nl.marcelhollink.mmorpg.frontend.main.view.gamestates.GameState;
 import nl.marcelhollink.mmorpg.frontend.main.view.gamestates.MenuState;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Scanner;
 
-public class ServerConnectionRunnable implements Runnable{
+public class ServerConnectionRunnable implements Runnable, SocketSubject{
 
-    private Socket clientSocket;
+    private static ServerConnectionRunnable instance;
+
     private boolean active = true;
 
     private static Scanner input;
     private static PrintWriter output;
 
+    private ArrayList<SocketObserver> observers;
+    private String data;
+
     public ServerConnectionRunnable(Socket clientSocket) {
-        this.clientSocket = clientSocket;
+        this.observers = new ArrayList<>();
+        instance = this;
+
+        try {
+            input = new Scanner(clientSocket.getInputStream());
+            output = new PrintWriter(clientSocket.getOutputStream(), true);
+        } catch (IOException e){
+            e.printStackTrace();
+        }
+        Logger.log(Logger.level.DEBUG, "serverConnectionRunnable created");
+    }
+
+    public static ServerConnectionRunnable getObserverSubject(){
+        return instance;
     }
 
     @Override
     public void run() {
-        try{
-            input = new Scanner(clientSocket.getInputStream());
-            output = new PrintWriter(clientSocket.getOutputStream(), true);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        output.println("/connect");
         try {
             while (active) {
                 if (input.hasNextLine()) {
-                    final String data = input.nextLine();
+                    data = input.nextLine();
+                    Logger.log(Logger.level.DEBUG, "Recieved ["+data+"]");
+                    notifyObservers();
 
-                    if(data.contains("/serverID")){
-                        Logger.log(Logger.level.DEBUG, "Recieved ["+data+"]");
-                        UI.serverID = data.split(" ")[1];
-                        Logger.log(Logger.level.INFO, "Connected to server " + UI.serverID);
-                    }
-                    if(data.contains("/currentlyOnline")){
-                        Logger.log(Logger.level.DEBUG, "Recieved ["+data+"]");
-                        Logger.log(Logger.level.INFO, data.substring(17));
-                    }
-                    if(data.contains("/exitSplash")){
-                        Logger.log(Logger.level.DEBUG, "Recieved ["+data+"]");
-                        MenuState.stopSplash();
-                    }
-                    if(data.contains("/register")) {
-                        Logger.log(Logger.level.DEBUG, "Recieved ["+data+"]");
-                        UI.getFrame().getPanel().getGsc().getGameStates().get(GameStateController.REGISTERSTATE).receive(data);
-                    }
-                    if(data.contains("/login")) {
-                        Logger.log(Logger.level.DEBUG, "Recieved ["+data+"]");
-                        UI.getFrame().getPanel().getGsc().getGameStates().get(GameStateController.LOGINSTATE).receive(data);
-                    }
-                    if(data.contains("/userDetails")){
-                        Logger.log(Logger.level.DEBUG, "Recieved ["+data+"]");
-                        UI.getFrame().getPanel().getGsc().getGameStates().get(GameStateController.PROFILESTATE).receive(data);
-                    }
                     if(data.contains("/serverDisconnected")) {
                         Logger.log(Logger.level.DEBUG, "Recieved ["+data+"]");
                         UI.getFrame().getPanel().getGsc().setState(GameStateController.SERVERDISCONNECTEDSTATE);
                     }
-                    if(data.contains("/createCharacter")){
-                        Logger.log(Logger.level.DEBUG, "Recieved [" + data + "]");
-                    }
-                    if(data.contains("characterDetails")){
-                        Logger.log(Logger.level.DEBUG, "Recieved ["+data+"]");
-                        UI.getFrame().getPanel().getGsc().getGameStates().get(GameStateController.PROFILEMANAGERSTATE).receive(data);
-                    }
+
                 }
             }
             output.close();
@@ -86,5 +68,23 @@ public class ServerConnectionRunnable implements Runnable{
 
     public void send(String s){
         output.println(s);
+    }
+
+    @Override
+    public void register(SocketObserver o) {
+        observers.add(o);
+    }
+
+    @Override
+    public void unregister(SocketObserver o) {
+        observers.remove(o);
+    }
+
+    @Override
+    public void notifyObservers() {
+        Logger.log(Logger.level.TRACE,"Notified "+observers.size()+" observers");
+        for(SocketObserver observer : observers){
+            observer.update(data);
+        }
     }
 }

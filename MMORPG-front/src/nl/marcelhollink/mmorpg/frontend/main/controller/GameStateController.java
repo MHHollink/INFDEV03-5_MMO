@@ -1,5 +1,7 @@
 package nl.marcelhollink.mmorpg.frontend.main.controller;
 
+import nl.marcelhollink.mmorpg.frontend.main.connection.ServerConnectionRunnable;
+import nl.marcelhollink.mmorpg.frontend.main.utils.Logger;
 import nl.marcelhollink.mmorpg.frontend.main.view.gamestates.ProfileManagerState;
 import nl.marcelhollink.mmorpg.frontend.main.view.gamestates.*;
 
@@ -32,7 +34,8 @@ public class GameStateController {
      * Sets current state to MenuState.
      */
     public GameStateController() {
-        gameStates = new ArrayList<GameState>();
+        Logger.log(Logger.level.INFO, "GameStateController has been constructed");
+        gameStates = new ArrayList<>();
 
         gameStates.add(new ServerDisconnectedState(this));
         gameStates.add(new ServerOfflineState(this));
@@ -61,7 +64,7 @@ public class GameStateController {
      * Updates the currentStates logic
      */
     public void update(){
-        gameStates.get(currentState).update();
+        gameStates.get(currentState).updateLogic();
     }
 
     /**

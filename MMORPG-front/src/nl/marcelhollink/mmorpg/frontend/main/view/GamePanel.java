@@ -3,6 +3,7 @@ package nl.marcelhollink.mmorpg.frontend.main.view;
 import nl.marcelhollink.mmorpg.frontend.main.UI;
 import nl.marcelhollink.mmorpg.frontend.main.connection.ClientSocket;
 import nl.marcelhollink.mmorpg.frontend.main.controller.GameStateController;
+import nl.marcelhollink.mmorpg.frontend.main.utils.Logger;
 
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicSliderUI;
@@ -30,6 +31,7 @@ public class GamePanel extends JPanel  implements Runnable, KeyListener {
 
     public GamePanel() {
         super();
+        Logger.log(Logger.level.INFO, "GamePanel has been constructed");
 
         setPreferredSize(new Dimension(UI.WIDTH, UI.HEIGHT));
         setMaximumSize(new Dimension(UI.WIDTH, UI.HEIGHT));
@@ -50,13 +52,13 @@ public class GamePanel extends JPanel  implements Runnable, KeyListener {
     }
 
     private void init() {
+        Logger.log(Logger.level.INFO, "Initializing GamePanel");
         image = new BufferedImage(UI.WIDTH, UI.HEIGHT, BufferedImage.TYPE_INT_RGB);
         g = (Graphics2D) image.getGraphics();
 
         running = true;
 
         gsc = new GameStateController();
-        UI.clientSocket = new ClientSocket(UI.getServerIP(), UI.getServerPort());
     }
 
     public void run() {
@@ -66,6 +68,7 @@ public class GamePanel extends JPanel  implements Runnable, KeyListener {
         long elapsed;
         long wait;
 
+        Logger.log(Logger.level.INFO, "Started running the gameLoop");
         while(running){
             start = System.nanoTime();
 

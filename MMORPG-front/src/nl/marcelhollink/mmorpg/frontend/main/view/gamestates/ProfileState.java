@@ -1,10 +1,13 @@
 package nl.marcelhollink.mmorpg.frontend.main.view.gamestates;
 
 import nl.marcelhollink.mmorpg.frontend.main.UI;
+import nl.marcelhollink.mmorpg.frontend.main.connection.ClientSocket;
+import nl.marcelhollink.mmorpg.frontend.main.connection.ServerConnectionRunnable;
 import nl.marcelhollink.mmorpg.frontend.main.controller.GameStateController;
 import nl.marcelhollink.mmorpg.frontend.main.graphics.ImageLoader;
 import nl.marcelhollink.mmorpg.frontend.main.model.*;
 import nl.marcelhollink.mmorpg.frontend.main.model.Character;
+import nl.marcelhollink.mmorpg.frontend.main.observers.SocketObserver;
 import nl.marcelhollink.mmorpg.frontend.main.utils.Logger;
 import nl.marcelhollink.mmorpg.frontend.main.view.StringCenter;
 
@@ -13,7 +16,7 @@ import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-public class ProfileState extends GameState {
+public class ProfileState extends GameState implements SocketObserver {
 
     private static int cheatCode = 0;
 
@@ -37,12 +40,15 @@ public class ProfileState extends GameState {
 
     @Override
     public void init() {
-        UI.clientSocket.send("/request userDetails "+user.getUsername());
-        UI.clientSocket.send("/request charactersFor "+user.getUsername());
+        Logger.log(Logger.level.INFO, getClass().getSimpleName() +" was initiated");
+        ServerConnectionRunnable.getObserverSubject().register(this);
+
+        ClientSocket.getInstance().send("/request userDetails " + user.getUsername());
+        ClientSocket.getInstance().send("/request charactersFor " + user.getUsername());
     }
 
     @Override
-    public void update() {
+    public void updateLogic() {
 
     }
 
@@ -52,7 +58,7 @@ public class ProfileState extends GameState {
 
         g.drawImage(filler, 0, 0, UI.WIDTH, UI.HEIGHT, null);
 
-        g.setColor(UI.disabledColor);
+        g.setColor(UI.DISABLED_COLOR);
         // VERTICAL LINE SEPARATOR
         g.fillRect(UI.WIDTH/2, 80, 3, UI.HEIGHT-160);
 
@@ -66,8 +72,8 @@ public class ProfileState extends GameState {
         if (bottom) g.fillRect(0, UI.HEIGHT - 78, UI.WIDTH, 80);
         if (top) g.fillRect(0, 0, UI.WIDTH, 80);
 
-        g.setColor(UI.mainColor);
-        g.setFont(UI.font);
+        g.setColor(UI.MAIN_COLOR);
+        g.setFont(UI.MAIN_FONT);
         if(left && !bottom && !top) { // IF LEFT
             g.drawString("Name:", 15, 125);
             g.drawString(user.getFirstName() + " " + user.getLastName(),
@@ -104,8 +110,8 @@ public class ProfileState extends GameState {
     public void keyPressed(int k) {
         if (k == KeyEvent.VK_ESCAPE) {
             try {
-                UI.clientSocket.send("/disconnectMeFromMMORPGServer");
-                UI.clientSocket.getServer().close();
+                ClientSocket.getInstance().send("/disconnectMeFromMMORPGServer");
+                ClientSocket.getInstance().getServer().close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -129,13 +135,16 @@ public class ProfileState extends GameState {
     private void select(){
         if(bottom) {
             gsc.setState(GameStateController.SHOPPINGSTATE);
+            ServerConnectionRunnable.getObserverSubject().unregister(this);
         } else if (top) {
             // NO GAME IMPLEMENTED
 
         } else if (right) {
             gsc.setState(GameStateController.AVATARMANAGERSTATE);
+            ServerConnectionRunnable.getObserverSubject().unregister(this);
         } else if (left) {
             gsc.setState(GameStateController.PROFILEMANAGERSTATE);
+            ServerConnectionRunnable.getObserverSubject().unregister(this);
         }
     }
 
@@ -161,7 +170,7 @@ public class ProfileState extends GameState {
                 case 12:if(k==KeyEvent.VK_Y){cheatCode++;return;}
                 case 13:if(k==KeyEvent.VK_INSERT){
                     user.setBalance(user.getBalance()+20);
-                    UI.clientSocket.send("/UserCheatCodePlusTwentyBalanceInsert");
+                    ClientSocket.getInstance().send("/UserCheatCodePlusTwentyBalanceInsert");
                     cheatCode=0;
                     return;
                 }
@@ -171,7 +180,7 @@ public class ProfileState extends GameState {
     }
 
     @Override
-    public void receive(String data) {
+    public void update(String data) {
         if (data.contains("/userDetails")) {
             Logger.log(Logger.level.INFO, "user data received");
             String[] args = data.split(" ");

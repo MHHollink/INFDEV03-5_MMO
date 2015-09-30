@@ -1,8 +1,11 @@
 package nl.marcelhollink.mmorpg.frontend.main.view.gamestates;
 
 import nl.marcelhollink.mmorpg.frontend.main.UI;
+import nl.marcelhollink.mmorpg.frontend.main.connection.ClientSocket;
+import nl.marcelhollink.mmorpg.frontend.main.connection.ServerConnectionRunnable;
 import nl.marcelhollink.mmorpg.frontend.main.controller.GameStateController;
 import nl.marcelhollink.mmorpg.frontend.main.graphics.ImageLoader;
+import nl.marcelhollink.mmorpg.frontend.main.observers.SocketObserver;
 import nl.marcelhollink.mmorpg.frontend.main.utils.Logger;
 import nl.marcelhollink.mmorpg.frontend.main.view.StringCenter;
 
@@ -25,7 +28,7 @@ import java.io.IOException;
  *     Quit will disconnect from the server, then Exit(0);
  * </p>
  */
-public class MenuState extends GameState {
+public class MenuState extends GameState implements SocketObserver {
 
     private int currentChoice = 0;
     private String[] options = {
@@ -41,35 +44,39 @@ public class MenuState extends GameState {
     private BufferedImage logo;
 
     private boolean timedOut = false;
+    private int currentOnline;
 
     public MenuState(GameStateController gsc) {
         this.gsc = gsc;
-
-        il = new ImageLoader();
+        this.il = new ImageLoader();
 
         filler =  il.getImage("/FantasyWorld.jpg");
         sign = il.getImage("/sign.png");
 
         final long start = System.currentTimeMillis();
         final int timeout = 10000;
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (splashing) {
-                    if (start + timeout < start) timedOut = true;
-                }
+        new Thread(() -> {
+            while (splashing) {
+                if (start + timeout < start) timedOut = true;
             }
         }).start();
+
+
     }
 
     @Override
     public void init() {
-        Logger.log(Logger.level.INFO, "MainState was initiated");
+        Logger.log(Logger.level.INFO, getClass().getSimpleName() + " was initiated");
         logo = il.getImage("/logo.png");
+
+        ServerConnectionRunnable.getObserverSubject().register(this);
+        if (splashing) {
+            ClientSocket.getInstance().send("/connect");
+        }
     }
 
     @Override
-    public void update() { }
+    public void updateLogic() { }
 
     @Override
     public void draw(Graphics2D g) {
@@ -84,13 +91,13 @@ public class MenuState extends GameState {
             g.drawImage(sign, (UI.WIDTH / 2) - 140, 240, 300, 200, null);
             g.drawImage(sign, (UI.WIDTH / 2) + 140, 290, -300, 200, null);
 
-            g.setFont(UI.font);
+            g.setFont(UI.MAIN_FONT);
 
             for (int i = 0; i < options.length; i++) {
                 if (i == currentChoice) {
-                    g.setColor(UI.mainColor);
+                    g.setColor(UI.MAIN_COLOR);
                 } else {
-                    g.setColor(UI.disabledColor);
+                    g.setColor(UI.DISABLED_COLOR);
                 }
                 g.drawString(options[i], StringCenter.center(options[i], g), 300 + i * 50);
             }
@@ -128,16 +135,18 @@ public class MenuState extends GameState {
         if(currentChoice == 0){
             // Login
             gsc.setState(GameStateController.LOGINSTATE);
+            ServerConnectionRunnable.getObserverSubject().unregister(this);
         }
         if(currentChoice == 1){
             // Register
             gsc.setState(GameStateController.REGISTERSTATE);
+            ServerConnectionRunnable.getObserverSubject().unregister(this);
         }
         if(currentChoice == 2){
             // Quit
             try {
-                UI.clientSocket.send("/disconnectMeFromMMORPGServer");
-                UI.clientSocket.getServer().close();
+                ClientSocket.getInstance().send("/disconnectMeFromMMORPGServer");
+                ClientSocket.getInstance().getServer().close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -166,8 +175,8 @@ public class MenuState extends GameState {
             }
             if (k == KeyEvent.VK_ESCAPE) {
                 try {
-                    UI.clientSocket.send("/disconnectMeFromMMORPGServer");
-                    UI.clientSocket.getServer().close();
+                    ClientSocket.getInstance().send("/disconnectMeFromMMORPGServer");
+                    ClientSocket.getInstance().getServer().close();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -180,11 +189,19 @@ public class MenuState extends GameState {
     public void keyReleased(int k) { }
 
     @Override
-    public void receive(String s) {
-
+    public void update(String s) {
+        if(s.contains("/mainServerID")){
+            UI.serverID = s.split(" ")[1];
+        }
+        if(s.contains("/mainCurrentlyOnline")){
+            currentOnline = Integer.parseInt(s.split(" ")[1]);
+        }
+        if(s.contains("/mainExitSplash")){
+            stopSplash();
+        }
     }
 
-    public static void stopSplash(){
+    public void stopSplash(){
         splashing = false;
     }
 

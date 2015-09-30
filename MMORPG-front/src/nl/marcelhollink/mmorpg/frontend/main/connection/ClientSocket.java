@@ -3,6 +3,7 @@ package nl.marcelhollink.mmorpg.frontend.main.connection;
 import nl.marcelhollink.mmorpg.frontend.main.UI;
 import nl.marcelhollink.mmorpg.frontend.main.controller.GameStateController;
 import nl.marcelhollink.mmorpg.frontend.main.utils.Logger;
+import sun.rmi.runtime.Log;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -15,25 +16,43 @@ import java.net.Socket;
  */
 public class ClientSocket {
 
-    final int port;
-    final String ip;
+    private static ClientSocket instance;
 
-    Socket server;
-    ServerConnectionRunnable runnable;
+    private Socket server;
+    private ServerConnectionRunnable runnable;
 
-    public ClientSocket(String ip, int port){
-        this.ip = ip;
-        this.port = port;
+    public static ClientSocket getInstance() {
+        if(instance==null){
+            Logger.log(Logger.level.INFO, "Tried to get ClientSocket instance but did not exist, creating one...");
+            instance = new ClientSocket(UI.SERVER_IP,UI.SERVER_PORT);
+            Logger.log(Logger.level.INFO, "Created ClientSocket instance");
+        }
+        return instance;
+    }
 
+    public static void createInstance() {
+        if(instance==null){
+            instance = new ClientSocket(UI.SERVER_IP,UI.SERVER_PORT);
+            Logger.log(Logger.level.INFO, "Created ClientSocket instance");
+        } else {
+            Logger.log(Logger.level.INFO, "Tried to create ClientSocket instance but already exist, skipping...");
+        }
+    }
+
+    private ClientSocket(String ip, int port){
         try {
             if (UI.LOCAL) {
                 server = new Socket(InetAddress.getLocalHost(), port);
+                Logger.log(Logger.level.DEBUG, "Connected to local server");
             } else {
                 server = new Socket(ip, port);
+                Logger.log(Logger.level.DEBUG, "Connected to open server on "+ip);
             }
 
             runnable = new ServerConnectionRunnable(server);
+            Logger.log(Logger.level.TRACE, "Created ServerConnectionRunnable");
             new Thread(runnable).start();
+            Logger.log(Logger.level.TRACE, "Started ServerConnectionRunnable");
         }
         catch (IOException e) {
             Logger.log(Logger.level.ERROR, "Server connection time out [" + e.getMessage() +"]");

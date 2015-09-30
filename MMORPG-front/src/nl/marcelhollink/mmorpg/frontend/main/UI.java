@@ -60,25 +60,26 @@ public class UI {
     public static double SCALE = 1.25;
 
     // FONT AND COLORS
-    public static Color mainColor = new Color(207, 65, 16);
-    public static Color disabledColor = new Color(41, 3, 9);
-    public static Font titleFont = new Font("Copperplate Gothic Bold", Font.PLAIN, 64);
-    public static Font font = new Font("Copperplate Gothic Light", Font.PLAIN, 27);
+    public static final Color MAIN_COLOR = new Color(207, 65, 16);
+    public static final Color DISABLED_COLOR = new Color(41, 3, 9);
+    public static final Font BOLD_FONT = new Font("Copperplate Gothic Bold", Font.PLAIN, 64);
+    public static final Font MAIN_FONT = new Font("Copperplate Gothic Light", Font.PLAIN, 27);
 
     // CURRENT BUILD
     public static final String BUILD = "build 0.1-alpha";
 
     // SERVER ID AND SOCKET
     public static String serverID;
-    public static ClientSocket clientSocket;
 
-    private static String serverIP = "92.108.159.52";
-    private static int serverPort = 25565;
+    public static final String SERVER_IP = "92.108.159.52";
+    public static final int SERVER_PORT = 25565;
 
     // FRAME JFrame
     private static GameFrame frame;
 
     public static void main(String[] args) {
+        ClientSocket.createInstance();
+
         WIDTH = (int) (WIDTH/SCALE);  // SCALE WINDOW LITTLE BIT DOWN IN WIDTH
         HEIGHT= (int) (HEIGHT/SCALE); // SCALE WINDOW LITTLE BIT DOWN IN HEIGHT
 
@@ -87,12 +88,6 @@ public class UI {
 
     public static GameFrame getFrame() {
         return frame;
-    }
-    public static int getServerPort() {
-        return serverPort;
-    }
-    public static String getServerIP() {
-        return serverIP;
     }
 
 }

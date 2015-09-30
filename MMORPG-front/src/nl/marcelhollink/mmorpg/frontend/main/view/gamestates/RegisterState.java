@@ -1,10 +1,12 @@
 package nl.marcelhollink.mmorpg.frontend.main.view.gamestates;
 
 import nl.marcelhollink.mmorpg.frontend.main.UI;
+import nl.marcelhollink.mmorpg.frontend.main.connection.ClientSocket;
+import nl.marcelhollink.mmorpg.frontend.main.connection.ServerConnectionRunnable;
 import nl.marcelhollink.mmorpg.frontend.main.controller.GameStateController;
 import nl.marcelhollink.mmorpg.frontend.main.graphics.ImageLoader;
+import nl.marcelhollink.mmorpg.frontend.main.observers.SocketObserver;
 import nl.marcelhollink.mmorpg.frontend.main.utils.Logger;
-import nl.marcelhollink.mmorpg.frontend.main.view.StringCenter;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -14,7 +16,7 @@ import java.util.Arrays;
 
 import static java.awt.event.KeyEvent.*;
 
-public class RegisterState extends GameState {
+public class RegisterState extends GameState implements SocketObserver{
 
     char[] alphanumerics = new char[]{
             'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',
@@ -63,7 +65,7 @@ public class RegisterState extends GameState {
 
     @Override
     public void init() {
-        Logger.log(Logger.level.INFO, "RegisterState was initiated");
+        Logger.log(Logger.level.INFO, getClass().getSimpleName() +" was initiated");
 
         il = new ImageLoader();
         background = il.getImage("/FantasyWorld3.jpg");
@@ -90,10 +92,12 @@ public class RegisterState extends GameState {
         ibanLengthIncorrect = false;
 
         Arrays.sort(alphanumerics);
+
+        ServerConnectionRunnable.getObserverSubject().register(this);
     }
 
     @Override
-    public void update() {
+    public void updateLogic() {
         if(username.length() > 0) {
             username = username.substring(0, 1).toUpperCase() + username.substring(1).toLowerCase();
         }
@@ -113,7 +117,7 @@ public class RegisterState extends GameState {
 
         g.drawImage(logo,UI.WIDTH/4-250, 50,null);
 
-        g.setFont(UI.font);
+        g.setFont(UI.MAIN_FONT);
 
         drawTextField(editUsername,"Username",username,usernamePos,g);
         drawTextField(editPassword,"Password",passwordLength,passwordPos,g);
@@ -139,8 +143,8 @@ public class RegisterState extends GameState {
     }
 
     private void drawTextField(boolean hovered, String id, String text, Point position, Graphics2D g){
-        if(hovered) g.setColor(UI.mainColor);
-        else g.setColor(UI.disabledColor);
+        if(hovered) g.setColor(UI.MAIN_COLOR);
+        else g.setColor(UI.DISABLED_COLOR);
         g.drawImage(sign, position.x-40,position.y-40,350,90,null);
         g.drawString(id, position.x, position.y);
         g.drawString(text, position.x + 7, position.y + 34);
@@ -165,7 +169,7 @@ public class RegisterState extends GameState {
                 ibanLengthIncorrect) { return; }
 
                                  //regiUser : - username, - first name, - last name, - iban, - password
-            UI.clientSocket.send("/regiUser " + username + " " + firstName + " " + lastName + " " + iban + " " + password);
+            ClientSocket.getInstance().send("/registerMMOUser " + username + " " + firstName + " " + lastName + " " + iban + " " + password);
         }
 
         if( k == KeyEvent.VK_UP ) {
@@ -239,11 +243,12 @@ public class RegisterState extends GameState {
     }
 
     @Override
-    public void receive(String data) {
-        if(data.contains("/registerSccs")){
+    public void update(String data) {
+        if(data.contains("/registerSuccessful")){
             gsc.setState(GameStateController.LOGINSTATE);
+            ServerConnectionRunnable.getObserverSubject().unregister(this);
         }
-        if(data.contains("/registerR-or")) {
+        if(data.contains("/registerError")) {
             registerErrorMessage = data.split("'")[1];
         }
     }

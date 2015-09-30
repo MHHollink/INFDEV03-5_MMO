@@ -1,8 +1,11 @@
 package nl.marcelhollink.mmorpg.frontend.main.view.gamestates;
 
 import nl.marcelhollink.mmorpg.frontend.main.UI;
+import nl.marcelhollink.mmorpg.frontend.main.connection.ClientSocket;
+import nl.marcelhollink.mmorpg.frontend.main.connection.ServerConnectionRunnable;
 import nl.marcelhollink.mmorpg.frontend.main.controller.GameStateController;
 import nl.marcelhollink.mmorpg.frontend.main.graphics.ImageLoader;
+import nl.marcelhollink.mmorpg.frontend.main.observers.SocketObserver;
 import nl.marcelhollink.mmorpg.frontend.main.utils.Logger;
 import nl.marcelhollink.mmorpg.frontend.main.view.StringCenter;
 
@@ -13,7 +16,7 @@ import java.util.Arrays;
 
 import static java.awt.event.KeyEvent.*;
 
-public class LoginState extends GameState {
+public class LoginState extends GameState implements SocketObserver{
 
     char[] alphanumerics = new char[]{
             'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',
@@ -24,29 +27,29 @@ public class LoginState extends GameState {
     private BufferedImage sign;
     private BufferedImage logo;
 
-    String username = "";
-    boolean editUsername = true;
+    private String username = "";
+    private boolean editUsername = true;
 
-    String password = "";
-    String passwordLength = "";
-    boolean editPassword = false;
+    private String password = "";
+    private String passwordLength = "";
+    private boolean editPassword = false;
 
     private boolean hoverSubmit = false;
 
-    Point usernamePos = new Point(UI.WIDTH/2 -150,270);
-    Point passwordPos = new Point(UI.WIDTH/2 -150,345);
+    private Point usernamePos = new Point(UI.WIDTH/2 -150,270);
+    private Point passwordPos = new Point(UI.WIDTH/2 -150,345);
 
     private boolean alertFalseIdentification;
     private boolean alertNotFoundIdentification;
 
-
     public LoginState(GameStateController gsc) {
         this.gsc = gsc;
+
     }
 
     @Override
     public void init() {
-        Logger.log(Logger.level.INFO, "Login was initiated");
+        Logger.log(Logger.level.INFO, getClass().getSimpleName() +"was initiated");
 
         il = new ImageLoader();
         background = il.getImage("/FantasyWorld2.jpg");
@@ -57,10 +60,12 @@ public class LoginState extends GameState {
 
         alertFalseIdentification = false;
         alertNotFoundIdentification = false;
+
+        ServerConnectionRunnable.getObserverSubject().register(this);
     }
 
     @Override
-    public void update() {
+    public void updateLogic() {
         if(username.length() > 0) {
             username = username.substring(0, 1).toUpperCase() + username.substring(1).toLowerCase();
         }
@@ -74,7 +79,7 @@ public class LoginState extends GameState {
 
         g.drawImage(logo,UI.WIDTH/2-300, 50,null);
 
-        g.setFont(UI.font);
+        g.setFont(UI.MAIN_FONT);
 
         g.drawImage(sign, UI.WIDTH/2-200,235,400,85,null);
         g.drawImage(sign, UI.WIDTH/2+200,310,-400,85,null);
@@ -83,8 +88,8 @@ public class LoginState extends GameState {
         drawTextField(editUsername, "Username", username, usernamePos, g);
         drawTextField(editPassword,"Password",passwordLength,passwordPos,g);
 
-        if(hoverSubmit) g.setColor(UI.mainColor);
-        else g.setColor(UI.disabledColor);
+        if(hoverSubmit) g.setColor(UI.MAIN_COLOR);
+        else g.setColor(UI.DISABLED_COLOR);
         g.drawString("Login", passwordPos.x + 107, passwordPos.y + 92);
 
         g.setColor(Color.RED);
@@ -105,8 +110,8 @@ public class LoginState extends GameState {
     }
 
     private void drawTextField(boolean hovered, String id, String text, Point position, Graphics2D g){
-        if(hovered) g.setColor(UI.mainColor);
-        else g.setColor(UI.disabledColor);
+        if(hovered) g.setColor(UI.MAIN_COLOR);
+        else g.setColor(UI.DISABLED_COLOR);
         g.drawString(id, StringCenter.center(id,g), position.y);
         g.drawString(text, position.x + 7, position.y + 34);
     }
@@ -124,6 +129,7 @@ public class LoginState extends GameState {
             alertNotFoundIdentification = false;
 
             gsc.setState(GameStateController.MENUSTATE);
+            ServerConnectionRunnable.getObserverSubject().unregister(this);
         }
         // IF tab is pressed OR Enter is pressed WHILE editing username of password
         if (k == VK_UP || k == VK_DOWN || (k == VK_ENTER && !hoverSubmit)) {
@@ -144,7 +150,7 @@ public class LoginState extends GameState {
 
         if (k == VK_ENTER && hoverSubmit) {
 
-            UI.clientSocket.send("/attemptedLogin "+username+" "+password);
+            ClientSocket.getInstance().send("/attemptedLogin " + username + " " + password);
 
         }
 
@@ -188,13 +194,14 @@ public class LoginState extends GameState {
     }
 
     @Override
-    public void receive(String data) {
+    public void update(String data) {
         if(data.contains("/loginSuccessful")){
             Logger.log(Logger.level.INFO, "User has logged in with " + username);
             ProfileState.user.setUsername(username);
             alertFalseIdentification = false;
             alertNotFoundIdentification = false;
             gsc.setState(GameStateController.PROFILESTATE);
+            ServerConnectionRunnable.getObserverSubject().unregister(this);
         } else if (data.contains("/loginFail") && data.contains("incorrect")) {
             username = ""; password = ""; passwordLength = "";
             alertFalseIdentification = true;

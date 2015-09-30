@@ -1,8 +1,10 @@
 package nl.marcelhollink.mmorpg.frontend.main.view.gamestates;
 
 import nl.marcelhollink.mmorpg.frontend.main.UI;
+import nl.marcelhollink.mmorpg.frontend.main.connection.ServerConnectionRunnable;
 import nl.marcelhollink.mmorpg.frontend.main.controller.GameStateController;
 import nl.marcelhollink.mmorpg.frontend.main.graphics.ImageLoader;
+import nl.marcelhollink.mmorpg.frontend.main.observers.SocketObserver;
 import nl.marcelhollink.mmorpg.frontend.main.utils.Logger;
 import nl.marcelhollink.mmorpg.frontend.main.view.gamestates.GameState;
 
@@ -10,25 +12,23 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 
-/**
- * This Class was created by marcel on 28-9-2015
- * Time of creation : 16:42
- */
-public class ProfileManagerState extends GameState {
+
+public class ProfileManagerState extends GameState implements SocketObserver {
 
     public ProfileManagerState(GameStateController gsc) {
         this.gsc = gsc;
-
         this.il = new ImageLoader();
     }
 
     @Override
     public void init() {
-        Logger.log(Logger.level.INFO, "ProfileManagerState was initiated");
+
+        Logger.log(Logger.level.INFO, getClass().getSimpleName() +" was initiated");
+        ServerConnectionRunnable.getObserverSubject().register(this);
     }
 
     @Override
-    public void update() {
+    public void updateLogic() {
 
     }
 
@@ -41,6 +41,7 @@ public class ProfileManagerState extends GameState {
     public void keyPressed(int k) {
         if (k == KeyEvent.VK_ESCAPE) {
             gsc.setState(GameStateController.PROFILESTATE);
+            ServerConnectionRunnable.getObserverSubject().unregister(this);
         }
     }
 
@@ -50,7 +51,7 @@ public class ProfileManagerState extends GameState {
     }
 
     @Override
-    public void receive(String s) {
+    public void update(String s) {
 
     }
 }

@@ -1,6 +1,8 @@
 package nl.marcelhollink.mmorpg.frontend.main.view;
 
 import nl.marcelhollink.mmorpg.frontend.main.UI;
+import nl.marcelhollink.mmorpg.frontend.main.connection.ClientSocket;
+import nl.marcelhollink.mmorpg.frontend.main.utils.Logger;
 
 import javax.swing.*;
 
@@ -14,6 +16,7 @@ public class GameFrame extends JFrame {
 
     public GameFrame() {
         super();
+        Logger.log(Logger.level.INFO, "GameFrame has been constructed");
 
         panel = new GamePanel();
         setContentPane(panel);
@@ -23,11 +26,10 @@ public class GameFrame extends JFrame {
         this.addWindowListener(new WindowListener() {
             @Override
             public void windowClosing(WindowEvent e) {
+                Logger.log(Logger.level.INFO, "game being closed");
                 try {
-
-                        UI.clientSocket.send("/disconnectMeFromMMORPGServer");
-                        UI.clientSocket.getServer().close();
-
+                        ClientSocket.getInstance().send("/disconnectMeFromMMORPGServer");
+                        ClientSocket.getInstance().getServer().close();
                 } catch (IOException exception) {
                     exception.printStackTrace();
                 } catch (NullPointerException ignore){ }
