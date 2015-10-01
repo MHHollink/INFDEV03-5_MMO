@@ -9,6 +9,9 @@ import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 import java.util.logging.Level;
 
 public class Test {
@@ -35,12 +38,14 @@ public class Test {
                 .addAnnotatedClass(UserOwnsCharacter.class)
                 .buildSessionFactory(ssr);
 
-        setServerActiveState("92.108.159.52:25565",true);
-//        registerUser(new String[]{"null", "Evestar01", "Marcel", "Hollink", "NL01INGB123412", "test"});
-//        registerChar(new String[]{"null", "Mjollnir1994", "Qulan", "Male"});
-//        registerChar(new String[]{"null", "Mjollnir1994", "Eve1994", "Female"});
-//        registerChar(new String[]{"null", "Evestar01", "Evestar01", "Female"});
 
+//        Logger.log(Logger.level.WARN, "STARTED CREATION OF 10K USER BASE");
+//        for (int i = 0; i < 10000; i++) {
+//            Logger.log(Logger.level.INFO, "user {" + i + "}");
+//            String username = UUID.randomUUID().toString().replaceAll("-", "").substring(0,11);
+//            System.out.println(username);
+//            registerUser(new String[]{"null", username, "TestUser", "TestUser", "TESTUSERBANKINGACC", "test"});
+//        }
 
         sf.close();
     }
@@ -49,10 +54,10 @@ public class Test {
         Session session = sf.openSession();
         session.beginTransaction();
 
-        if(session.get(Character.class, args[2])!=null){
+        if (session.get(Character.class, args[2]) != null) {
             Logger.log(Logger.level.WARN, "tried to save an existing character!");
         } else {
-            if(session.get(User.class, args[1])!=null){
+            if (session.get(User.class, args[1]) != null) {
                 Logger.log(Logger.level.INFO, "saving character");
                 User user = session.get(User.class, args[1]);
 
@@ -85,7 +90,7 @@ public class Test {
         Session session = sf.openSession();
         session.beginTransaction();
 
-        if(session.get(User.class, args[1])!=null){
+        if (session.get(User.class, args[1]) != null) {
             Logger.log(Logger.level.WARN, "tried to save an existing user!");
         } else {
             Logger.log(Logger.level.INFO, "started the creation of a user");
@@ -110,18 +115,5 @@ public class Test {
         }
 
         session.close();
-    }
-
-    public void setServerActiveState(String serverIp, boolean state) {
-        Logger.log(Logger.level.INFO, "Setting server active state to "+state);
-        Session session = sf.openSession();
-        session.beginTransaction();
-
-        Server openingServer = session.get(Server.class, serverIp);
-        openingServer.setActive(state);
-        session.save(openingServer);
-        session.getTransaction().commit();
-        session.close();
-        Logger.log(Logger.level.DEBUG, "Server activeState is now "+state);
     }
 }
