@@ -39,8 +39,9 @@ public class LoginState extends GameState implements SocketObserver{
     private Point usernamePos = new Point(UI.WIDTH/2 -150,270);
     private Point passwordPos = new Point(UI.WIDTH/2 -150,345);
 
-    private boolean alertFalseIdentification;
-    private boolean alertNotFoundIdentification;
+    private boolean alertError;
+    private String errorString;
+
 
     public LoginState(GameStateController gsc) {
         this.gsc = gsc;
@@ -49,17 +50,16 @@ public class LoginState extends GameState implements SocketObserver{
 
     @Override
     public void init() {
-        Logger.log(Logger.level.INFO, getClass().getSimpleName() +"was initiated");
+        Logger.log(Logger.level.INFO, getClass().getSimpleName() +" was initiated");
 
         il = new ImageLoader();
-        background = il.getImage("/FantasyWorld2.jpg");
-        sign = il.getImage("/signNoArrow.png");
-        logo = il.getImage("/logo.png");
+        background = il.getImage(ImageLoader.FANTASY_WORLD_TWO);
+        sign = il.getImage(ImageLoader.NO_ARROWED_SIGN);
+        logo = il.getImage(ImageLoader.LOGO);
 
         Arrays.sort(alphanumerics);
 
-        alertFalseIdentification = false;
-        alertNotFoundIdentification = false;
+        alertError = false;
 
         ServerConnectionRunnable.getObserverSubject().register(this);
     }
@@ -93,11 +93,9 @@ public class LoginState extends GameState implements SocketObserver{
         g.drawString("Login", passwordPos.x + 107, passwordPos.y + 92);
 
         g.setColor(Color.RED);
-        if(alertFalseIdentification)
-            g.drawString("WRONG USERNAME OR PASSWORD", StringCenter.center("WRONG USERNAME OR PASSWORD",g), UI.HEIGHT-50);
+        if(alertError)
+            g.drawString(errorString, StringCenter.center(errorString,g), UI.HEIGHT-50);
 
-        if(alertNotFoundIdentification)
-            g.drawString("USERNAME DOES NOT EXIST", StringCenter.center("USERNAME DOES NOT EXIST",g), UI.HEIGHT-50);
 
 
         g.setFont(new Font("Arial",Font.ITALIC,12));
@@ -125,8 +123,7 @@ public class LoginState extends GameState implements SocketObserver{
             username = "";
             password = "";
             passwordLength = "";
-            alertFalseIdentification = false;
-            alertNotFoundIdentification = false;
+            alertError = false;
 
             gsc.setState(GameStateController.MENUSTATE);
             ServerConnectionRunnable.getObserverSubject().unregister(this);
@@ -198,19 +195,23 @@ public class LoginState extends GameState implements SocketObserver{
         if(data.contains("/loginSuccessful")){
             Logger.log(Logger.level.INFO, "User has logged in with " + username);
             ProfileState.user.setUsername(username);
-            alertFalseIdentification = false;
-            alertNotFoundIdentification = false;
+            alertError = false;
             gsc.setState(GameStateController.PROFILESTATE);
             ServerConnectionRunnable.getObserverSubject().unregister(this);
         } else if (data.contains("/loginFail") && data.contains("incorrect")) {
             username = ""; password = ""; passwordLength = "";
-            alertFalseIdentification = true;
-            alertNotFoundIdentification = false;
+            alertError = true;
+            errorString = "The password entered was incorrect";
         } else if (data.contains("/loginFail") && data.contains("notFound")) {
             username = ""; password = ""; passwordLength = "";
-            alertFalseIdentification = false;
-            alertNotFoundIdentification = true;
+            alertError = true;
+            errorString = "this username does not exist";
+        } else if (data.contains("/loginFail") && data.contains("alreadyLoggedIn")) {
+            username = ""; password = ""; passwordLength = "";
+            alertError = true;
+            errorString = "Your account seems to be logged in already";
         }
+
     }
 
 }

@@ -50,8 +50,8 @@ public class MenuState extends GameState implements SocketObserver {
         this.gsc = gsc;
         this.il = new ImageLoader();
 
-        filler =  il.getImage("/FantasyWorld.jpg");
-        sign = il.getImage("/sign.png");
+        filler =  il.getImage(ImageLoader.FANTASY_WORLD_ONE);
+        sign = il.getImage(ImageLoader.ARROWED_SIGN);
 
         final long start = System.currentTimeMillis();
         final int timeout = 10000;
@@ -69,9 +69,21 @@ public class MenuState extends GameState implements SocketObserver {
         Logger.log(Logger.level.INFO, getClass().getSimpleName() + " was initiated");
         logo = il.getImage("/logo.png");
 
-        ServerConnectionRunnable.getObserverSubject().register(this);
-        if (splashing) {
-            ClientSocket.getInstance().send("/connect");
+        try {
+            ServerConnectionRunnable.getObserverSubject().register(this);
+            if (splashing) {
+                ClientSocket.getInstance().send("/connect");
+            }
+        }catch (NullPointerException e) {
+            try {
+                Thread.sleep(1000);
+                ClientSocket.getInstance().send("/connect");
+
+            } catch (InterruptedException i) {
+                i.printStackTrace();
+            } catch (NullPointerException i) {
+                GameStateController.getInstance().setState(GameStateController.SERVEROFFLINESTATE);
+            }
         }
     }
 

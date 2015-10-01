@@ -32,9 +32,9 @@ public class ServerDisconnectedState extends GameState {
         Logger.log(Logger.level.INFO, getClass().getSimpleName() +" was initiated");
         this.il = new ImageLoader();
 
-        filler = il.getImage("/FantasyWorld.jpg");
-        sign = il.getImage("/signNoArrow.png");
-        logo = il.getImage("/logo.png");
+        filler = il.getImage(ImageLoader.FANTASY_WORLD_ONE);
+        sign = il.getImage(ImageLoader.NO_ARROWED_SIGN);
+        logo = il.getImage(ImageLoader.LOGO);
     }
 
     @Override

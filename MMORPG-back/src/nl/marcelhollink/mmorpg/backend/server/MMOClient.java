@@ -1,7 +1,9 @@
 package nl.marcelhollink.mmorpg.backend.server;
 
-import nl.marcelhollink.mmorpg.backend.server.database.model.*;
 import nl.marcelhollink.mmorpg.backend.server.database.model.Character;
+import nl.marcelhollink.mmorpg.backend.server.database.model.CharacterSkills;
+import nl.marcelhollink.mmorpg.backend.server.database.model.User;
+import nl.marcelhollink.mmorpg.backend.server.database.model.UserOwnsCharacter;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
@@ -9,14 +11,15 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 
+/**
+ * MMOClient is the class responsible for all the handling of incoming commands from a single client/user
+ */
 @SuppressWarnings({"UnnecessaryLocalVariable", "FieldCanBeLocal"})
 public class MMOClient implements Runnable{
 
-    private final int connectionID;
-
+    // Server properties
     private final MMOServer server;
 
     private Socket clientSocket;
@@ -25,12 +28,19 @@ public class MMOClient implements Runnable{
     private Scanner input;
     private PrintWriter output;
 
+    // Client ID;
     private String clientPrefix;
 
+    /**
+     * MMOClient constructor
+     *
+     * @param server
+     * @param clientSocket
+     * @param connectionID
+     */
     public MMOClient(MMOServer server, Socket clientSocket, int connectionID) {
         this.server = server;
         this.clientSocket = clientSocket;
-        this.connectionID = connectionID;
 
         this.clientPrefix = "Client "+connectionID+" ";
 
@@ -54,7 +64,7 @@ public class MMOClient implements Runnable{
                     if(data.contains("/connect")){
                         Logger.log(Logger.level.INFO, clientPrefix + " connected...");
                         output.println("/mainServerID Netherlands-NL01");
-                        output.println("/mainCurrentlyOnline "+server.clients.size());
+                        output.println("/mainCurrentlyOnline "+server.getClients().size());
                         output.println("/mainExitSplash");
                     }
 
@@ -109,7 +119,7 @@ public class MMOClient implements Runnable{
             e.printStackTrace();
         }
         Logger.log(Logger.level.INFO, clientPrefix + " has disconnected");
-        server.clients.remove(this);
+        server.getClients().remove(this);
     }
 
     private void buyMoreCharacterSlots(String[] args){
@@ -117,8 +127,8 @@ public class MMOClient implements Runnable{
         session.beginTransaction();
 
         User user = session.get(User.class, clientPrefix);
-        if(user.getBalance() > 6){
-            user.setSlots(user.getSlots()+1);
+        if(user.getBalance() > 6 * Integer.parseInt(args[2])){
+            user.setSlots(user.getSlots()+Integer.parseInt(args[2]));
             session.update(user);
             session.getTransaction().commit();
             output.println("/shopSuccessful");
@@ -138,6 +148,7 @@ public class MMOClient implements Runnable{
         Query query = session.createQuery("from UserOwnsCharacter where user_username = :username");
         query.setParameter("username", clientPrefix);
 
+        //noinspection unchecked
         ArrayList<UserOwnsCharacter> userOwnsCharacters = (ArrayList<UserOwnsCharacter>) query.list();
         for (UserOwnsCharacter uoc : userOwnsCharacters) {
             Character character = session.get(Character.class, uoc.getCharacter().getCharacterName());
@@ -164,7 +175,7 @@ public class MMOClient implements Runnable{
     }
 
     private String updateBalance(String[] args) {
-        String response = "";
+        String response = "/updateBalance successful";
 
         Session session = server.sf.openSession();
         session.beginTransaction();
@@ -176,7 +187,7 @@ public class MMOClient implements Runnable{
         session.getTransaction().commit();
         session.close();
 
-        response = "updated user balance with "+args[2];
+        response += "updated user balance with "+args[2];
 
         return response;
     }
@@ -204,7 +215,7 @@ public class MMOClient implements Runnable{
     }
 
     private String registerUser(String[] args) {
-        String response = "";
+        String response = "/register";
 
         Session session = server.sf.openSession();
         session.beginTransaction();
@@ -212,7 +223,7 @@ public class MMOClient implements Runnable{
         if(session.get(User.class, args[1])!=null){
            Logger.log(Logger.level.INFO,clientPrefix+" tried to save an existing user!");
 
-            response = "/registerError 'Username Already exists";
+            response += "Error 'Username Already exists";
         } else {
             Logger.log(Logger.level.INFO, clientPrefix + " started the creation of a user");
 
@@ -233,7 +244,7 @@ public class MMOClient implements Runnable{
             session.getTransaction().commit();
 
             Logger.log(Logger.level.INFO, clientPrefix + " saved a new user in the database");
-            response = "/registerSuccessful";
+            response += "Successful";
         }
 
         session.close();
@@ -241,20 +252,20 @@ public class MMOClient implements Runnable{
     }
 
     private String registerCharacter(String[] args) {
-        String response = "";
+        String response = "/createCharacter ";
 
         Session session = server.sf.openSession();
         session.beginTransaction();
 
         if(session.get(Character.class, args[2])!=null){
             Logger.log(Logger.level.WARN, clientPrefix + " tried to save over an existing character!");
-            response += "/createCharacter error alreadyExists";
+            response += "error alreadyExists";
         } else {
             if(session.get(User.class, args[1])!=null){
                 User user = session.get(User.class, args[1]);
 
                 if(user.getSlots() < 1) {
-                    return "/createCharacter error noSlotsAvailable";
+                    response += "error noSlotsAvailable";
                 }
 
                 Logger.log(Logger.level.INFO, clientPrefix + " saving character");
@@ -296,7 +307,7 @@ public class MMOClient implements Runnable{
                 session.update(user);
 
                 session.getTransaction().commit();
-                response += "/createCharacter successful";
+                response += "successful";
             } else {
                 Logger.log(Logger.level.ERROR, 404, "username not found");
             }
@@ -306,7 +317,7 @@ public class MMOClient implements Runnable{
     }
 
     private String login(String[] args) {
-        String response = "";
+        String response = "/login";
 
         Logger.log(Logger.level.INFO, clientPrefix + " tries to login");
 
@@ -315,18 +326,22 @@ public class MMOClient implements Runnable{
 
         if(session.get(User.class, args[1])!=null){
             User user = session.get(User.class, args[1]);
+
             if (user.getPassword().equals(args[2])){
-                response = "/loginSuccessful";
+                for (int i = 0; i < server.getClients().size(); i++) {
+                    if(server.getClients().get(i).clientPrefix.equals(args[1])) return "/loginFail alreadyLoggedIn";
+                }
+                response += "Successful";
                 Logger.log(Logger.level.INFO, clientPrefix + " logged in as " + args[1]);
                 Logger.log(Logger.level.INFO, clientPrefix + " is now known as " + args[1]);
                 clientPrefix = args[1];
             } else {
                 Logger.log(Logger.level.INFO, clientPrefix + " logging in with wrong identification");
-                response = "/loginFail incorrect";
+                response += "Fail incorrect";
             }
         } else {
             Logger.log(Logger.level.INFO, clientPrefix + " username was not found when logging in");
-            response = "/loginFail notFound";
+            response += "Fail notFound";
         }
 
         session.close();

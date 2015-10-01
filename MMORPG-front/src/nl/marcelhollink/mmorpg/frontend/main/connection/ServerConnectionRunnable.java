@@ -53,7 +53,7 @@ public class ServerConnectionRunnable implements Runnable, SocketSubject{
 
                     if(data.contains("/serverDisconnected")) {
                         Logger.log(Logger.level.DEBUG, "Recieved ["+data+"]");
-                        UI.getFrame().getPanel().getGsc().setState(GameStateController.SERVERDISCONNECTEDSTATE);
+                        GameStateController.getInstance().setState(GameStateController.SERVERDISCONNECTEDSTATE);
                     }
 
                 }

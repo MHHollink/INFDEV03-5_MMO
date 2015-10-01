@@ -56,7 +56,7 @@ public class ClientSocket {
         }
         catch (IOException e) {
             Logger.log(Logger.level.ERROR, "Server connection time out [" + e.getMessage() +"]");
-            UI.getFrame().getPanel().getGsc().setState(GameStateController.SERVEROFFLINESTATE);
+            GameStateController.getInstance().setState(GameStateController.SERVEROFFLINESTATE);
         }
     }
 

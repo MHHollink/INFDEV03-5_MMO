@@ -170,20 +170,19 @@ public class CharacterSkills implements Serializable {
 
         CharacterSkills that = (CharacterSkills) o;
 
-        if (attack != that.attack) return false;
-        if (bartering != that.bartering) return false;
-        if (combatLevel != that.combatLevel) return false;
-        if (defence != that.defence) return false;
-        if (hitpoints != that.hitpoints) return false;
-        if (mining != that.mining) return false;
-        if (skillLevel != that.skillLevel) return false;
-        if (smithing != that.smithing) return false;
-        if (strength != that.strength) return false;
-        if (totalLevel != that.totalLevel) return false;
-        if (woodcutting != that.woodcutting) return false;
-        if (!character.equals(that.character)) return false;
+        return  attack == that.attack &&
+                bartering == that.bartering &&
+                combatLevel == that.combatLevel &&
+                defence == that.defence &&
+                hitpoints == that.hitpoints &&
+                mining == that.mining &&
+                skillLevel == that.skillLevel &&
+                smithing == that.smithing &&
+                strength == that.strength &&
+                totalLevel == that.totalLevel &&
+                woodcutting == that.woodcutting &&
+                character.equals(that.character);
 
-        return true;
     }
 
     @Override

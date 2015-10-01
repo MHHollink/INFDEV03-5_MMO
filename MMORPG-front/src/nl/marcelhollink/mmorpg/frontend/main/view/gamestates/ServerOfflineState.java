@@ -16,7 +16,7 @@ import java.awt.image.BufferedImage;
  */
 public class ServerOfflineState extends GameState {
 
-    String s = "The server is currently not online,",
+    String s = "The server is currently full,",
            n = "please try again later.";
 
     private BufferedImage filler;
@@ -27,9 +27,9 @@ public class ServerOfflineState extends GameState {
         this.gsc = gsc;
         this.il = new ImageLoader();
 
-        filler = il.getImage("/FantasyWorld.jpg");
-        sign = il.getImage("/signNoArrow.png");
-        logo = il.getImage("/logo.png");
+        filler = il.getImage(ImageLoader.FANTASY_WORLD_ONE);
+        sign = il.getImage(ImageLoader.NO_ARROWED_SIGN);
+        logo = il.getImage(ImageLoader.LOGO);
     }
 
     @Override

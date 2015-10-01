@@ -35,7 +35,7 @@ public class ProfileState extends GameState implements SocketObserver {
         user = new Player(null, null, null, 0, null, 0, 0, null);
 
         il = new ImageLoader();
-        filler = il.getImage("/FantasyWorld2.jpg");
+        filler = il.getImage(ImageLoader.FANTASY_WORLD_TWO);
     }
 
     @Override
@@ -96,10 +96,26 @@ public class ProfileState extends GameState implements SocketObserver {
         }
         if (right && !bottom && !top) { // IF RIGHT
 
+            g.drawString("Free character slots",UI.WIDTH/2 + 15 , 125);
+            g.drawString(String.valueOf(user.getCharacterSlots()),UI.WIDTH - 25 - ((int) g.getFontMetrics().getStringBounds(user.getCharacterSlots()+"",g).getWidth()), 125);
+
+            g.drawString("Characters", UI.WIDTH/2 + 15, 200);
+            for (int i = 0; i < user.getCharacters().size(); i++) {
+                g.drawString(user.getCharacters().get(i).getCharacterName(), UI.WIDTH/2 + 15, 240 + 40*i);
+                g.drawString("Level: ", UI.WIDTH - 240, 240 +40 * i);
+
+                int ttl = user.getCharacters().get(i).getTotalLevel();
+                g.drawString(
+                        String.valueOf(ttl),
+                        UI.WIDTH - 25 - ((int) g.getFontMetrics().getStringBounds(ttl+"",g).getWidth()),
+                        240 + 40*i
+                );
+            }
+
             g.drawString("Profile", StringCenter.center("Profile", g) - UI.WIDTH / 4, UI.HEIGHT / 2);
         }
         if(bottom || top){ // IF BOTTOM ORM TOP
-            g.drawString("Charracters", UI.WIDTH/4 + StringCenter.center("Charracters",g), UI.HEIGHT/2);
+            g.drawString("Characters", UI.WIDTH/4 + StringCenter.center("Characters",g), UI.HEIGHT/2);
             g.drawString("Profile", StringCenter.center("Profile", g) - UI.WIDTH / 4, UI.HEIGHT / 2);
         }
         g.drawString("Enter the Shop!", StringCenter.center("Enter the Shop!",g), UI.HEIGHT-30);
@@ -140,11 +156,11 @@ public class ProfileState extends GameState implements SocketObserver {
             // NO GAME IMPLEMENTED
 
         } else if (right) {
-            gsc.setState(GameStateController.AVATARMANAGERSTATE);
+            gsc.setState(GameStateController.CHARACTERCREATIONSTATE);
             ServerConnectionRunnable.getObserverSubject().unregister(this);
         } else if (left) {
-            gsc.setState(GameStateController.PROFILEMANAGERSTATE);
-            ServerConnectionRunnable.getObserverSubject().unregister(this);
+//            gsc.setState(GameStateController.PROFILEMANAGERSTATE);
+//            ServerConnectionRunnable.getObserverSubject().unregister(this);
         }
     }
 
@@ -214,8 +230,6 @@ public class ProfileState extends GameState implements SocketObserver {
                     Integer.parseInt(args[10]),
                     Integer.parseInt(args[11])
                 );
-
-            Logger.log(Logger.level.DEBUG, character.toString());
             ProfileState.user.addCharacters(character);
         }
 

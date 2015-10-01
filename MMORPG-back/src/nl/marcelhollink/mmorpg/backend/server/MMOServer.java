@@ -24,7 +24,7 @@ public class MMOServer {
     private static final int PORT = 25565;
 
     private static ServerSocket server;
-    ArrayList<MMOClient> clients;
+    private ArrayList<MMOClient> clients;
 
     SessionFactory sf;
     Configuration conf;
@@ -115,5 +115,9 @@ public class MMOServer {
         session.getTransaction().commit();
         session.close();
         Logger.log(Logger.level.DEBUG, "Server activeState is now "+state);
+    }
+
+    public ArrayList<MMOClient> getClients() {
+        return clients;
     }
 }

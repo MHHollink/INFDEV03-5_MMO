@@ -1,6 +1,5 @@
 package nl.marcelhollink.mmorpg.frontend.main.view.gamestates;
 
-import nl.marcelhollink.mmorpg.frontend.main.observers.SocketObserver;
 import nl.marcelhollink.mmorpg.frontend.main.controller.GameStateController;
 import nl.marcelhollink.mmorpg.frontend.main.graphics.ImageLoader;
 

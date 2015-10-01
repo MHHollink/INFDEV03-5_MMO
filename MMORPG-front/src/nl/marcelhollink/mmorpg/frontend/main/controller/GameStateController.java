@@ -1,8 +1,6 @@
 package nl.marcelhollink.mmorpg.frontend.main.controller;
 
-import nl.marcelhollink.mmorpg.frontend.main.connection.ServerConnectionRunnable;
 import nl.marcelhollink.mmorpg.frontend.main.utils.Logger;
-import nl.marcelhollink.mmorpg.frontend.main.view.gamestates.ProfileManagerState;
 import nl.marcelhollink.mmorpg.frontend.main.view.gamestates.*;
 
 import java.awt.*;
@@ -15,6 +13,16 @@ import java.util.ArrayList;
  */
 public class GameStateController {
 
+    private static GameStateController instance;
+
+    public static GameStateController getInstance() {
+        if(instance == null) {
+            Logger.log(Logger.level.INFO, "Tried to get GameStateController instance but did not exist, creating one...");
+            instance = new GameStateController();
+        }
+        return instance;
+    }
+
     private ArrayList<GameState> gameStates;
     private int currentState;
 
@@ -25,15 +33,15 @@ public class GameStateController {
             LOGINSTATE = 3,
             REGISTERSTATE = 4,
             PROFILESTATE = 5,
-            PROFILEMANAGERSTATE = 6,
-            AVATARMANAGERSTATE = 7,
+            //PROFILEMANAGERSTATE = 6,
+            CHARACTERCREATIONSTATE = 7,
             SHOPPINGSTATE = 8;
 
     /**
      * Constructs the GSC, Initiate the GameStates-ArrayList and puts all states in it.
      * Sets current state to MenuState.
      */
-    public GameStateController() {
+    private GameStateController() {
         Logger.log(Logger.level.INFO, "GameStateController has been constructed");
         gameStates = new ArrayList<>();
 
@@ -43,8 +51,8 @@ public class GameStateController {
         gameStates.add(new LoginState(this));
         gameStates.add(new RegisterState(this));
         gameStates.add(new ProfileState(this));
-        gameStates.add(new ProfileManagerState(this));
-        gameStates.add(new AvatarManagerState(this));
+        gameStates.add(null); //gameStates.add(new ProfileManagerState(this));
+        gameStates.add(new CharacterCreationState(this));
         gameStates.add(new ShoppingState(this));
 
         setState(MENUSTATE);

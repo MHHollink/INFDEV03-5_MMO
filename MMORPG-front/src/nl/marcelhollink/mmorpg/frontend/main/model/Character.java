@@ -39,7 +39,7 @@ public class Character {
         this.combatLevel = attack+defence+strength;
         this.skillLevel = mining+woodcutting+smithing+bartering;
 
-        this.totalLevel = combatLevel + skillLevel;
+        this.totalLevel = combatLevel + skillLevel + hitpoints;
     }
 
     public String getCharacterName() {

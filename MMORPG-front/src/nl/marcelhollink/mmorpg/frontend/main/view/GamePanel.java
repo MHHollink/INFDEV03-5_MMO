@@ -4,6 +4,7 @@ import nl.marcelhollink.mmorpg.frontend.main.UI;
 import nl.marcelhollink.mmorpg.frontend.main.connection.ClientSocket;
 import nl.marcelhollink.mmorpg.frontend.main.controller.GameStateController;
 import nl.marcelhollink.mmorpg.frontend.main.utils.Logger;
+import nl.marcelhollink.mmorpg.frontend.main.view.gamestates.GameState;
 
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicSliderUI;
@@ -25,9 +26,6 @@ public class GamePanel extends JPanel  implements Runnable, KeyListener {
     // image
     private BufferedImage image;
     private Graphics2D g;
-
-    // game state manager
-    private GameStateController gsc;
 
     public GamePanel() {
         super();
@@ -57,8 +55,6 @@ public class GamePanel extends JPanel  implements Runnable, KeyListener {
         g = (Graphics2D) image.getGraphics();
 
         running = true;
-
-        gsc = new GameStateController();
     }
 
     public void run() {
@@ -89,11 +85,11 @@ public class GamePanel extends JPanel  implements Runnable, KeyListener {
     }
 
     private void update() {
-        gsc.update();
+        GameStateController.getInstance().update();
     }
 
     private void draw() {
-        gsc.draw(g);
+        GameStateController.getInstance().draw(g);
     }
 
     private void drawToScreen() {
@@ -104,13 +100,9 @@ public class GamePanel extends JPanel  implements Runnable, KeyListener {
 
     public void keyTyped(KeyEvent key) { }
     public void keyPressed(KeyEvent key) {
-        gsc.keyPressed(key.getKeyCode());
+        GameStateController.getInstance().keyPressed(key.getKeyCode());
     }
     public void keyReleased(KeyEvent key) {
-        gsc.keyReleased(key.getKeyCode());
-    }
-
-    public GameStateController getGsc() {
-        return gsc;
+        GameStateController.getInstance().keyReleased(key.getKeyCode());
     }
 }

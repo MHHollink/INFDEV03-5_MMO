@@ -40,8 +40,7 @@ public class RegisterState extends GameState implements SocketObserver{
             passwordPos     = new Point((UI.WIDTH/2)+100,200),
             firstNamePos    = new Point((UI.WIDTH/2)+100,300),
             lastNamePos     = new Point((UI.WIDTH/2)+100,400),
-            ibanPos         = new Point((UI.WIDTH/2)+100,500),
-            submitPos       = new Point((UI.WIDTH/2)+100,600);
+            ibanPos         = new Point((UI.WIDTH/2)+100,500);
 
     private boolean
             editUsername    = true,
@@ -68,9 +67,9 @@ public class RegisterState extends GameState implements SocketObserver{
         Logger.log(Logger.level.INFO, getClass().getSimpleName() +" was initiated");
 
         il = new ImageLoader();
-        background = il.getImage("/FantasyWorld3.jpg");
-        sign = il.getImage("/signNoArrow.png");
-        logo = il.getImage("/logo.png");
+        background = il.getImage(ImageLoader.FANTASY_WORLD_TREE);
+        sign = il.getImage(ImageLoader.NO_ARROWED_SIGN);
+        logo = il.getImage(ImageLoader.LOGO);
 
         username = "";
         password = "";
@@ -168,7 +167,6 @@ public class RegisterState extends GameState implements SocketObserver{
                 firstNameLengthIncorrect || lastNameLengthIncorrect ||
                 ibanLengthIncorrect) { return; }
 
-                                 //regiUser : - username, - first name, - last name, - iban, - password
             ClientSocket.getInstance().send("/registerMMOUser " + username + " " + firstName + " " + lastName + " " + iban + " " + password);
         }
 
