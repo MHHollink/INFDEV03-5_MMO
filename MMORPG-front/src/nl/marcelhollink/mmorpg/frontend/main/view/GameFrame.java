@@ -54,8 +54,4 @@ public class GameFrame extends JFrame {
     public void setNewSize(int w, int h){
         setSize(w,h);
     }
-
-    public GamePanel getPanel() {
-        return panel;
-    }
 }

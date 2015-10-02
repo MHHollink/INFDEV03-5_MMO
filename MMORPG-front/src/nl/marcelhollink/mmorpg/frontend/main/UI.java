@@ -85,9 +85,4 @@ public class UI {
 
         frame = new GameFrame(); // CREATE THE FRAME
     }
-
-    public static GameFrame getFrame() {
-        return frame;
-    }
-
 }
