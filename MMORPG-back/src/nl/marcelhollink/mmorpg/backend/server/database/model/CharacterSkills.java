@@ -7,47 +7,49 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 import java.io.Serializable;
 
+import static nl.marcelhollink.mmorpg.backend.server.database.DatabaseSettings.*;
+
 @Entity
-@Table(name = "character_skills", schema = "public")
+@Table(name = CHARACTER_SKILLS_TABLE_NAME, schema = "public")
 public class CharacterSkills implements Serializable {
 
     @Id
     @OneToOne(targetEntity = Character.class)
     @Cascade(org.hibernate.annotations.CascadeType.ALL)
-    @JoinColumn(name = "character_name", nullable = false)
+    @JoinColumn(name = CHARACTER_SKILLS_COLUMN_CHARACTER_NAME, nullable = false)
     private Character character;
 
-    @Column(name = "total_level", nullable = false)
+    @Column(name = CHARACTER_SKILLS_COLUMN_LEVEL_TOTAL, nullable = false)
     private int totalLevel;
 
-    @Column(name = "combat_level", nullable = false)
+    @Column(name = CHARACTER_SKILLS_COLUMN_LEVEL_COMBAT, nullable = false)
     private int combatLevel;
 
-    @Column(name = "skill_level", nullable = false)
+    @Column(name = CHARACTER_SKILLS_COLUMN_LEVEL_SKILL, nullable = false)
     private int skillLevel;
 
-    @Column(name = "attack_level", nullable = false)
+    @Column(name = CHARACTER_SKILLS_COLUMN_LEVEL_ATTACK, nullable = false)
     private int attack;
 
-    @Column(name = "defence_level", nullable = false)
+    @Column(name = CHARACTER_SKILLS_COLUMN_LEVEL_DEFENCE, nullable = false)
     private int defence;
 
-    @Column(name = "strength_level", nullable = false)
+    @Column(name = CHARACTER_SKILLS_COLUMN_LEVEL_STRENGTH, nullable = false)
     private int strength;
 
-    @Column(name = "hitpoints_level", nullable = false)
+    @Column(name = CHARACTER_SKILLS_COLUMN_LEVEL_HIT_POINTS, nullable = false)
     private int hitpoints;
 
-    @Column(name = "mining_level", nullable = false)
+    @Column(name = CHARACTER_SKILLS_COLUMN_LEVEL_MINING, nullable = false)
     private int mining;
 
-    @Column(name = "woodcutting_level", nullable = false)
+    @Column(name = CHARACTER_SKILLS_COLUMN_LEVEL_WOODCUTTING, nullable = false)
     private int woodcutting;
 
-    @Column(name = "smithing_level", nullable = false)
+    @Column(name = CHARACTER_SKILLS_COLUMN_LEVEL_SMITHING, nullable = false)
     private int smithing;
 
-    @Column(name = "bartering_level", nullable = false)
+    @Column(name = CHARACTER_SKILLS_COLUMN_LEVEL_BARTERING, nullable = false)
     private int bartering;
 
     public CharacterSkills(Character character, int totalLevel, int combatLevel, int skillLevel, int attack, int defence, int strength, int hitpoints, int mining, int woodcutting, int smithing, int bartering) {

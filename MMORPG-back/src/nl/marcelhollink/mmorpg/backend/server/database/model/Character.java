@@ -1,25 +1,29 @@
 package nl.marcelhollink.mmorpg.backend.server.database.model;
 
 
+import nl.marcelhollink.mmorpg.backend.server.database.DatabaseSettings;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.io.Serializable;
 
+import static nl.marcelhollink.mmorpg.backend.server.database.DatabaseSettings.*;
+
 
 @Entity
-@Table(name = "characters", schema = "public")
+@Table(name = CHARACTER_TABLE_NAME, schema = "public")
 public class Character implements Serializable{
 
     @Id
-    @Column(name = "name", nullable = false, unique = true)
+    @Column(name = CHARACTER_COLUMN_NAME, nullable = false, unique = true)
     private String characterName;
 
-    @Column(name = "gender", nullable = false)
+    @Column(name = CHARACTER_COLUMN_GENDER, nullable = false)
     private String gender;
 
-    @Column(name = "balance", nullable = false)
+    @Column(name = CHARACTER_COLUMN_BALANCE, nullable = false)
     private int balance;
 
     public Character(String characterName, String gender, int balance) {

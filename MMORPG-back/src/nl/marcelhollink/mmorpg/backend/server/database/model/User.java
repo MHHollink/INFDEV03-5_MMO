@@ -1,41 +1,45 @@
 package nl.marcelhollink.mmorpg.backend.server.database.model;
 
+import nl.marcelhollink.mmorpg.backend.server.database.DatabaseSettings;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.io.Serializable;
 
+import static nl.marcelhollink.mmorpg.backend.server.database.DatabaseSettings.*;
+
 @Entity
-@Table(name = "users")
+@Table(name = USER_TABLE_NAME)
 public class User implements Serializable{
 
     @Id
-    @Column(name = "username", unique = true, nullable = false)
+    @Column(name = USER_COLUMN_USERNAME, unique = true, nullable = false)
     private String username;
 
-    @Column(name = "first_name", nullable = false)
+    @Column(name = USER_COLUMN_FIRST_NAME, nullable = false)
     private String fName;
 
-    @Column(name = "last_name", nullable = false)
+    @Column(name = USER_COLUMN_LAST_NAME, nullable = false)
     private String lName;
 
-    @Column(name = "character_slots", nullable = false)
+    @Column(name = USER_COLUMN_SLOTS, nullable = false)
     private int slots;
 
-    @Column(name = "balance", nullable = false)
+    @Column(name = USER_COLUMN_BALANCE, nullable = false)
     private double balance;
 
-    @Column(name = "last_payment")
+    @Column(name = USER_COLUMN_LAST_PAYED)
     private String lastPayment;
 
-    @Column(name = "days_left")
+    @Column(name = USER_COLUMN_DAYS_LEFT)
     private int daysLeft;
 
-    @Column(name = "iban", unique = true)
+    @Column(name = USER_COLUMN_IBAN, unique = true)
     private String iban;
 
-    @Column(name = "password", nullable = false)
+    @Column(name = USER_COLUMN_PASSWORD, nullable = false)
     private String password;
 
     public User(String username, String fName, String lName, int slots, double balance, String lastPayment, int daysLeft, String iban, String password) {

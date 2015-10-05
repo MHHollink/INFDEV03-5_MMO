@@ -1,5 +1,6 @@
 package nl.marcelhollink.mmorpg.backend.server.database.model;
 
+import nl.marcelhollink.mmorpg.backend.server.database.DatabaseSettings;
 import org.hibernate.annotations.*;
 import org.hibernate.annotations.CascadeType;
 
@@ -8,20 +9,22 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 import java.io.Serializable;
 
+import static nl.marcelhollink.mmorpg.backend.server.database.DatabaseSettings.*;
+
 @Entity
-@Table(name = "server_contains_character", schema = "public")
+@Table(name = SERVER_CONTAINS_CHARACTER_TABLE_NAME, schema = "public")
 public class ServerContainsCharacter implements Serializable {
 
     @Id
     @ManyToOne(targetEntity = Server.class)
     @Cascade(CascadeType.ALL)
-    @JoinColumn(name = "server_address", nullable = false)
+    @JoinColumn(name = SCC_SERVER, nullable = false)
     private Server address;
 
     @Id
     @OneToOne(targetEntity = Character.class)
     @Cascade(CascadeType.ALL)
-    @JoinColumn(name = "character_name", nullable = false, unique = true)
+    @JoinColumn(name = SCC_CHARACTER, nullable = false, unique = true)
     private Character character;
 
     public Server getAddress() {

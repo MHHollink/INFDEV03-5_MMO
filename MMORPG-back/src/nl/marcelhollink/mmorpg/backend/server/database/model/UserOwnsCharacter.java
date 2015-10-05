@@ -1,5 +1,6 @@
 package nl.marcelhollink.mmorpg.backend.server.database.model;
 
+import nl.marcelhollink.mmorpg.backend.server.database.DatabaseSettings;
 import org.hibernate.annotations.*;
 import org.hibernate.annotations.CascadeType;
 
@@ -8,20 +9,22 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 import java.io.Serializable;
 
+import static nl.marcelhollink.mmorpg.backend.server.database.DatabaseSettings.*;
+
 @Entity
-@Table(name = "users_owns_character", schema = "public")
+@Table(name = USER_OWNS_CHARACTER_TABLE_NAME, schema = "public")
 public class UserOwnsCharacter implements Serializable
 {
     @Id
     @Cascade(CascadeType.ALL)
     @ManyToOne(targetEntity = User.class)
-    @JoinColumn(name = "user_username", nullable = false)
+    @JoinColumn(name = UOC_USERNAME, nullable = false)
     private User username;
 
     @Id
     @OneToOne(targetEntity = Character.class)
     @Cascade(org.hibernate.annotations.CascadeType.ALL)
-    @JoinColumn(name = "character_name", nullable = false, unique = true)
+    @JoinColumn(name = UOC_CHARACTER, nullable = false, unique = true)
     private Character character;
 
     public User getUsername() {

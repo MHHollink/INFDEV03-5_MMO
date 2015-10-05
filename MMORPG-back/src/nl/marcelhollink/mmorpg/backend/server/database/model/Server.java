@@ -6,27 +6,29 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import java.io.Serializable;
 
+import static nl.marcelhollink.mmorpg.backend.server.database.DatabaseSettings.*;
+
 @Entity
-@Table(name = "servers", schema = "public")
+@Table(name = SERVER_TABLE_NAME, schema = "public")
 public class Server  implements Serializable {
 
     @Id
-    @Column(name = "address", nullable = false, unique = true)
+    @Column(name = SERVER_COLUMN_ADDRESS, nullable = false, unique = true)
     private String address;
 
-    @Column(name = "name", nullable = false, unique = true)
+    @Column(name = SERVER_COLUMN_NAME, nullable = false, unique = true)
     private String serverName;
 
-    @Column(name = "location", nullable = false)
+    @Column(name = SERVER_COLUMN_LOCAL, nullable = false)
     private String location;
 
-    @Column(name = "max_users", nullable = false)
+    @Column(name = SERVER_COLUMN_MAX_USERS, nullable = false)
     private int maximumUsers;
 
-    @Column(name = "current_users", nullable = false)
+    @Column(name = SERVER_COLUMN_CUR_USERS, nullable = false)
     private int connectedUsers;
 
-    @Column(name = "active", nullable = false)
+    @Column(name = SERVER_COLUMN_ACTIVE, nullable = false)
     private boolean active;
 
     public Server(String address, String serverName, String location, int maximumUsers, int connectedUsers, boolean active) {
