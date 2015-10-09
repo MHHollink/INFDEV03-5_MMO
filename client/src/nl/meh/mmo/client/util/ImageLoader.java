@@ -4,6 +4,9 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.util.Arrays;
 
+/**
+ * ImageLoader singleton is used to read the images from the res folder.
+ */
 public class ImageLoader {
 
     public static final String FANTASY_WORLD_ONE    = "/FantasyWorld.jpg";

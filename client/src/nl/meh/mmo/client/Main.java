@@ -24,7 +24,7 @@ public class Main {
     public static final Logger.level LOGLEVEL = Logger.level.DEBUG;
 
     // SERVER IS LOCALLY, ONLY FOR TESTING!!!
-    public static boolean LOCAL = true;
+    public static boolean LOCAL = false;
 
     // VALUES FOR THE JFrame AND JPanel
     public static final String TITLE = "EQUILIBRIUM";

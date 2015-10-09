@@ -16,6 +16,18 @@ import java.util.Arrays;
 
 import static java.awt.event.KeyEvent.*;
 
+/**
+ * The login state handles the login of a user.
+ *
+ * USer has to enter a valid username-password combination to login and eten the profile state.
+ *
+ * When user is not valid an message will be show on the user's screen.
+ *
+ * there are 3 types of errors that can be received from the server.
+ * - does not exist
+ * - not the right password
+ * - already logged in
+ */
 public class LoginState extends GameState implements SocketObserver{
 
     char[] alphanumerics = new char[]{

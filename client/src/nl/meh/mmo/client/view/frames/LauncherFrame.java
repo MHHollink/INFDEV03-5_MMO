@@ -2,8 +2,7 @@ package nl.meh.mmo.client.view.frames;
 
 import nl.meh.mmo.client.Main;
 import nl.meh.mmo.client.connection.socket.game.GameServerSocket;
-import nl.meh.mmo.client.connection.socket.launcher.LauncherServerConnectionRunnable;
-import nl.meh.mmo.client.connection.socket.launcher.LauncherSocket;
+import nl.meh.mmo.client.connection.socket.launcher.LauncherSocketCheck;
 import nl.meh.mmo.client.util.ImageLoader;
 import nl.meh.mmo.client.util.Logger;
 import nl.meh.mmo.client.util.StringCenter;
@@ -23,9 +22,6 @@ public class LauncherFrame extends JFrame{
 
     public LauncherFrame(){
         super();
-
-        if(!Main.LOCAL) LauncherSocket.createInstance("127.0.0.1", 25565);
-
         Logger.log(Logger.level.INFO, "LauncherFrame has been constructed");
 
         setContentPane(new LauncherPanel());
@@ -63,6 +59,12 @@ public class LauncherFrame extends JFrame{
                 "Oceania",
                 "Russia"
         };
+        private boolean[] serverAviable = {
+                false,false,
+                false,false,
+                false,false,
+                false,false
+        };
 
         private LauncherPanel () {
             super();
@@ -97,6 +99,15 @@ public class LauncherFrame extends JFrame{
             sign = ImageLoader.getInstance().getImage(ImageLoader.NO_ARROWED_SIGN);
 
             running = true;
+
+            serverAviable[0] = LauncherSocketCheck.isServerAvailable("92.111.181.188",25565);
+            serverAviable[1] = LauncherSocketCheck.isServerAvailable("92.108.159.52",25565);
+            serverAviable[2] = LauncherSocketCheck.isServerAvailable("77.170.50.230",25565);
+            serverAviable[3] = LauncherSocketCheck.isServerAvailable("143.179.47.135",25565);
+            serverAviable[4] = LauncherSocketCheck.isServerAvailable("92.111.181.188",25566);
+            serverAviable[5] = LauncherSocketCheck.isServerAvailable("92.108.159.52",25566);
+            serverAviable[6] = LauncherSocketCheck.isServerAvailable("77.170.50.230",25566);
+            serverAviable[7] = LauncherSocketCheck.isServerAvailable("127.0.0.1",25565);
         }
 
         private void update() {
@@ -114,19 +125,21 @@ public class LauncherFrame extends JFrame{
 
             int xxx = 0;
             for (int i = 0; i < servers.length; i++) {
-                if (i == currentChoice) {
-                    g.setColor(Main.MAIN_COLOR);
+                if (i == currentChoice && serverAviable[i]) {
+                    g.setColor(new Color(0, 255,0));
+                } else if (i == currentChoice && !serverAviable[i]) {
+                    g.setColor(new Color(255, 255, 0));
+                } else if (serverAviable[i]) {
+                    g.setColor(new Color(0, 255, 255));
                 } else {
-                    g.setColor(Main.DISABLED_COLOR);
+                    g.setColor(new Color(255, 0,0));
                 }
-                if(i < 4) {
-                    g.drawImage(sign, (Main.WIDTH / 4) - 160, 260 + xxx * 50, 350, 48, null);
-                    g.drawString(servers[i], StringCenter.center(servers[i], g) + Main.WIDTH / 4, 300 + xxx * 50);
-
+                if(i > 3) {
+                    //g.drawImage(sign, (Main.WIDTH / 4) - 195, 260 + xxx * 50, 400, 48, null);
+                    g.drawString(servers[i], StringCenter.center(servers[i], g) + Main.WIDTH / 4, 295 + xxx * 50);
                 } else {
-                    //g.drawImage(sign, (Main.WIDTH / 4) - 140, 190, 300, 200, null);
-                    g.drawString(servers[i], StringCenter.center(servers[i], g) - Main.WIDTH / 4, 300 + xxx * 50);
-
+                    //g.drawImage(sign, ((Main.WIDTH / 4) + (Main.WIDTH / 2)) - 195, 260 + xxx * 50, 400, 48, null);
+                    g.drawString(servers[i], StringCenter.center(servers[i], g) - Main.WIDTH / 4, 295 + xxx * 50);
                 }
                 if(xxx != 3) {
                     xxx++;
@@ -203,35 +216,34 @@ public class LauncherFrame extends JFrame{
         private void select(){
             switch (currentChoice) {
                 case 0:
-                    StartNewFrame("127.0.0.1", 25565);
+                    if(serverAviable[currentChoice]) startNewFrame("127.0.0.1", 25565);
                     break;
                 case 1:
-                    StartNewFrame("127.0.0.1", 25565);
+                    if(serverAviable[currentChoice]) startNewFrame("127.0.0.1", 25565);
                     break;
                 case 2:
-                    StartNewFrame("127.0.0.1", 25565);
+                    if(serverAviable[currentChoice]) startNewFrame("127.0.0.1", 25565);
                     break;
                 case 3:
-                    StartNewFrame("127.0.0.1", 25565);
+                    if(serverAviable[currentChoice]) startNewFrame("127.0.0.1", 25565);
                     break;
                 case 4:
-                    StartNewFrame("127.0.0.1", 25565);
+                    if(serverAviable[currentChoice]) startNewFrame("127.0.0.1", 25565);
                     break;
                 case 5:
-                    StartNewFrame("127.0.0.1", 25565);
+                    if(serverAviable[currentChoice]) startNewFrame("127.0.0.1", 25565);
                     break;
                 case 6:
-                    StartNewFrame("127.0.0.1", 25565);
+                    if(serverAviable[currentChoice]) startNewFrame("127.0.0.1", 25565);
                     break;
                 case 7:
-                    StartNewFrame("127.0.0.1", 25565);
+                    if(serverAviable[currentChoice]) startNewFrame("127.0.0.1", 25565);
                     break;
             }
         }
 
-        private void StartNewFrame(String ip, int port){
+        private void startNewFrame(String ip, int port){
             GameServerSocket.createInstance(ip, port);
-            if(!Main.LOCAL) LauncherServerConnectionRunnable.getInstance().stop();
             JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
             frame.dispose();
             new GameFrame();

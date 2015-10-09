@@ -4,13 +4,16 @@ import org.hibernate.annotations.*;
 
 import javax.persistence.*;
 import javax.persistence.Entity;
+import javax.persistence.Index;
 import javax.persistence.Table;
 import java.io.Serializable;
 
 import static nl.meh.mmo.server.server.database.DatabaseSettings.*;
 
 @Entity
-@Table(name = CHARACTER_SKILLS_TABLE_NAME, schema = "public")
+@Table(name = CHARACTER_SKILLS_TABLE_NAME, schema = "public"
+        ,indexes = {@Index(name = "skills_index", columnList = CHARACTER_SKILLS_COLUMN_CHARACTER_NAME)}
+)
 public class CharacterSkills implements Serializable {
 
     @Id

@@ -18,7 +18,9 @@
         <property name="cache.provider_class">org.hibernate.cache.NoCacheProvider</property>
 
         <!-- Echo all executed SQL to stdout -->
-        <property name="show_sql">false</property>
+        <property name="hibernate.show_sql">false</property>
+        <property name="hibernate.generate_statistics">false</property>
+        <property name="hibernate.use_sql_comments">false</property>
 
         <!-- Create the database schema on startup and leave intact after shutdown -->
         <property name="hibernate.hbm2ddl.auto">update</property>

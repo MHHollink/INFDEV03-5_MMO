@@ -1,15 +1,14 @@
 package nl.meh.mmo.server.server.database.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 
 import static nl.meh.mmo.server.server.database.DatabaseSettings.*;
 
 @Entity
-@Table(name = USER_TABLE_NAME)
+@Table(name = USER_TABLE_NAME
+        , indexes = {@Index(name = "users_index", columnList = USER_COLUMN_USERNAME)}
+)
 public class User implements Serializable{
 
     @Id
@@ -34,7 +33,7 @@ public class User implements Serializable{
     @Column(name = USER_COLUMN_DAYS_LEFT)
     private int daysLeft;
 
-    @Column(name = USER_COLUMN_IBAN, unique = true)
+    @Column(name = USER_COLUMN_IBAN)
     private String iban;
 
     @Column(name = USER_COLUMN_PASSWORD, nullable = false)

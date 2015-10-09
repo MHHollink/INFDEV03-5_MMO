@@ -3,6 +3,9 @@ package nl.meh.mmo.client.model;
 
 import java.util.ArrayList;
 
+/**
+ * Model player class. contains information about the player and his characters
+ */
 public class Player {
     String username;
     String firstName,lastName;

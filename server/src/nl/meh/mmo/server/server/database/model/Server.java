@@ -1,15 +1,14 @@
 package nl.meh.mmo.server.server.database.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 
 import static nl.meh.mmo.server.server.database.DatabaseSettings.*;
 
 @Entity
-@Table(name = SERVER_TABLE_NAME, schema = "public")
+@Table(name = SERVER_TABLE_NAME, schema = "public"
+        , indexes = {@Index(name = "server_index",columnList = SERVER_COLUMN_ADDRESS)}
+)
 public class Server  implements Serializable {
 
     @Id

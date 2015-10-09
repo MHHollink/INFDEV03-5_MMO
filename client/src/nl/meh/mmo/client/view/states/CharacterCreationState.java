@@ -17,7 +17,6 @@ import java.awt.image.BufferedImage;
 import static java.awt.event.KeyEvent.VK_BACK_SPACE;
 import static java.awt.event.KeyEvent.VK_RIGHT;
 
-// TODO :: IMPLEMENT CREATION OF CHARACTER IF FREESLOTS, SELECTING CHARACTER IF AVALIABLE, DELETING CHARACTER
 public class CharacterCreationState extends GameState implements SocketObserver{
 
     nl.meh.mmo.client.model.Character characterToCreate = new nl.meh.mmo.client.model.Character("","FEMALE",0);

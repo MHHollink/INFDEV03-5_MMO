@@ -15,6 +15,12 @@ import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
+/**
+ * The profile state shows the profile of the user. it has a list of all characters and their levels as well as the information about the user.
+ * Information about how much money is on the account and the amount of playable days is located in this state.
+ *
+ * From this state the user can enter the shopping state, character creation state and the in-game state. [last one NYI]
+ */
 public class ProfileState extends GameState implements SocketObserver {
 
     private static int cheatCode = 0;
@@ -153,7 +159,7 @@ public class ProfileState extends GameState implements SocketObserver {
         } else if (top) {
             // NO GAME IMPLEMENTED
 
-        } else if (right) {
+        } else if (right && user.getCharacterSlots() > 0) {
             gsc.setState(GameStateController.CHARACTERCREATIONSTATE);
             GameServerConnectionRunnable.getInstance().unregister(this);
         } else if (left) {

@@ -4,6 +4,9 @@ import nl.meh.mmo.client.Main;
 
 import java.util.Date;
 
+/**
+ * Custom logger. adds time and type of a log to a simple System.out.println
+ */
 public class Logger {
 
     public enum level {

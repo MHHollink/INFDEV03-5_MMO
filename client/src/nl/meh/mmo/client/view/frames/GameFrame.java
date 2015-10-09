@@ -14,7 +14,11 @@ import java.awt.event.WindowListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-
+/**
+ * The GameFrame is the main frame of the applcication. When the user selects a server on the LauncherFrame a GameFrame will be instantiated.
+ *
+ * The GameFrame holds a JPanel which is used to draw a screen and receive key events from the user
+ */
 public class GameFrame extends JFrame{
     public GameFrame() {
         super();
@@ -53,6 +57,11 @@ public class GameFrame extends JFrame{
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     }
 
+    /**
+     * The GamePanel is the placeholder of the game content.
+     *
+     * It holds the game loop which updates the game and draws a screen every 0.0167 seconds.
+     */
     public class GamePanel extends JPanel  implements Runnable, KeyListener {
 
         // game thread

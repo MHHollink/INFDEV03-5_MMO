@@ -60,10 +60,10 @@ public class MMOServer {
         StandardServiceRegistry ssr = new StandardServiceRegistryBuilder().applySettings(conf.getProperties()).build();
 
         this.sf = conf
+                .addAnnotatedClass(User.class)
                 .addAnnotatedClass(nl.meh.mmo.server.server.database.model.Character.class)
                 .addAnnotatedClass(Server.class)
                 .addAnnotatedClass(ServerContainsCharacter.class)
-                .addAnnotatedClass(User.class)
                 .addAnnotatedClass(UserOwnsCharacter.class)
                 .addAnnotatedClass(CharacterSkills.class)
                 .buildSessionFactory(ssr);
@@ -105,7 +105,8 @@ public class MMOServer {
             clients = new ArrayList<>();
 
             Logger.log(Logger.level.INFO, "Server has started");
-            setServerActiveState(IP+":"+PORT,true);
+            Logger.log(Logger.level.INFO, "Players can now join on IP: "+IP+":"+PORT);
+            setServerActiveState(IP + ":" + PORT, true);
 
             // main thread loop
             while(active[0]){

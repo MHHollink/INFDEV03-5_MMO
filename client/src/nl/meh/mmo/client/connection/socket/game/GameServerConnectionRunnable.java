@@ -17,6 +17,7 @@ public class GameServerConnectionRunnable implements Runnable, SocketSubject{
 
     private boolean active = true;
 
+    private static Socket socket;
     private static Scanner input;
     private static PrintWriter output;
 
@@ -28,6 +29,7 @@ public class GameServerConnectionRunnable implements Runnable, SocketSubject{
         instance = this;
 
         try {
+            socket = clientSocket;
             input = new Scanner(clientSocket.getInputStream());
             output = new PrintWriter(clientSocket.getOutputStream(), true);
         } catch (IOException e){
@@ -57,6 +59,8 @@ public class GameServerConnectionRunnable implements Runnable, SocketSubject{
                 }
             }
             output.close();
+            input.close();
+            socket.close();
         }catch (Exception e){
             active = false;
             System.out.println("Socket is closed");

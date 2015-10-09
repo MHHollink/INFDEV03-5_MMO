@@ -11,8 +11,9 @@ import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 
 /**
- * This Class was created by marcel on 28-9-2015
- * Time of creation : 12:21
+ * When the server recieves the 'stop' command each client application on that server is send to this state.
+ *
+ * The ServerDisconnectedState shows a message and only gives the user the opption to quit the application.
  */
 public class ServerDisconnectedState extends GameState {
 

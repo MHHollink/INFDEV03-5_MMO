@@ -16,6 +16,13 @@ import java.util.Arrays;
 
 import static java.awt.event.KeyEvent.*;
 
+/**
+ * This state handles the registration and validation of the registration field.
+ *
+ * It sends all the values needed to create an account to the server and receives a success of error.
+ *
+ * on success the client is send to the login state / on error the user gets a message on what is wrong.
+ */
 public class RegisterState extends GameState implements SocketObserver{
 
     char[] alphanumerics = new char[]{

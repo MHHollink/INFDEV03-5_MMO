@@ -9,6 +9,7 @@ import org.hibernate.Session;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -43,8 +44,6 @@ public class MMOClient implements Runnable{
         this.clientSocket = clientSocket;
 
         this.clientPrefix = "Client "+connectionID+" ";
-
-        Logger.log(Logger.level.INFO, clientPrefix + " created...");
     }
 
     @Override
@@ -94,10 +93,10 @@ public class MMOClient implements Runnable{
                     }
                     if(data.contains("/shop")){
                         if(args[1].equals("days")){
-                            buyMoreDays(args);
+                            output.println(buyMoreDays(args));
                         }
                         if(args[1].equals("money")){
-                            updateBalance(args);
+                            output.println(updateBalance(args));
                         }
                         if(args[1].equals("characters")){
                             buyMoreCharacterSlots(args);
@@ -108,18 +107,18 @@ public class MMOClient implements Runnable{
                         Logger.log(Logger.level.WARN,clientPrefix+" has cheated!");
                         updateBalance(new String[]{"/shop", "money", "20"});
                     }
-                }
-
+                } else active = false;
             }
-            output.close();
 
         }catch (Exception e){
-            active = false;
+            active=false;
             Logger.log(Logger.level.ERROR,clientPrefix +" had en error!");
             e.printStackTrace();
         }
         Logger.log(Logger.level.INFO, clientPrefix + " has disconnected");
+        try { clientSocket.close(); } catch (IOException ignored) {}
         server.getClients().remove(this);
+        Thread.currentThread().stop();
     }
 
     /**
@@ -208,7 +207,7 @@ public class MMOClient implements Runnable{
      *      the command that has to be send back to the user
      */
     private String updateBalance(String[] args) {
-        String response = "/updateBalance successful";
+        String response = "/shopSuccessful ";
 
         Session session = server.sf.openSession();
         session.beginTransaction();
@@ -330,7 +329,7 @@ public class MMOClient implements Runnable{
         Session session = server.sf.openSession();
         session.beginTransaction();
 
-        if(session.get(Character.class, args[2])!=null){
+        if(session.get(nl.meh.mmo.server.server.database.model.Character.class, args[2])!=null){
             Logger.log(Logger.level.WARN, clientPrefix + " tried to save over an existing character!");
             response += "error alreadyExists";
         } else {
@@ -402,6 +401,7 @@ public class MMOClient implements Runnable{
      *          [2] - string {password}
 
      * @return
+     *          response for sending over socket
      */
     private String login(String[] args) {
         String response = "/login";
@@ -510,7 +510,7 @@ public class MMOClient implements Runnable{
         session.getTransaction().commit();
         session.close();
         Logger.log(Logger.level.INFO, clientPrefix + " bought a " + days + "days subscription");
-        return "/buyMonthSuccessful "+days;
+        return "/shopSuccessful "+days;
     }
 
     /**

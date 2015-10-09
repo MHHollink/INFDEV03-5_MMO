@@ -5,13 +5,16 @@ import org.hibernate.annotations.CascadeType;
 
 import javax.persistence.*;
 import javax.persistence.Entity;
+import javax.persistence.Index;
 import javax.persistence.Table;
 import java.io.Serializable;
 
 import static nl.meh.mmo.server.server.database.DatabaseSettings.*;
 
 @Entity
-@Table(name = SERVER_CONTAINS_CHARACTER_TABLE_NAME, schema = "public")
+@Table(name = SERVER_CONTAINS_CHARACTER_TABLE_NAME, schema = "public"
+        , indexes = {@Index(name = "scc_server_index", columnList = SCC_SERVER)}
+)
 public class ServerContainsCharacter implements Serializable {
 
     @Id

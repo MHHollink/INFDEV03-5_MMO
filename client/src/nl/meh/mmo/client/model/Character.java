@@ -1,6 +1,8 @@
 package nl.meh.mmo.client.model;
 
-
+/**
+ * Character model. contains all information about a single character: name, gender, balance and levels
+ */
 public class Character {
 
     private String characterName;
